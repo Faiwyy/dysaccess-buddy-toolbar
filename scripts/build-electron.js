@@ -8,11 +8,14 @@ if (!fs.existsSync(path.join(__dirname, '../electron'))) {
   fs.mkdirSync(path.join(__dirname, '../electron'));
 }
 
-// Copy the Electron main file to the electron directory
-fs.copyFileSync(
-  path.join(__dirname, '../src/electron/main.ts'),
-  path.join(__dirname, '../electron/main.js')
-);
+// Compile TypeScript to JavaScript
+console.log('Compiling TypeScript...');
+try {
+  execSync('npx tsc src/electron/main.ts --outDir electron', { stdio: 'inherit' });
+} catch (error) {
+  console.error('Error compiling TypeScript:', error);
+  process.exit(1);
+}
 
 console.log('Building Vite app...');
 try {

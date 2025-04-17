@@ -16,25 +16,31 @@ Cette application peut être exécutée comme une application de bureau grâce �
 npm install
 ```
 
-### 2. Exécuter le script de construction pour Windows
+### 2. Installer les dépendances d'Electron (première fois uniquement)
+
+```bash
+npm install electron @types/electron --no-save
+```
+
+### 3. Exécuter le script de construction pour Windows
 
 ```bash
 node scripts/build-electron.js win
 ```
 
-### 3. Exécuter le script de construction pour Mac
+### 4. Exécuter le script de construction pour Mac
 
 ```bash
 node scripts/build-electron.js mac
 ```
 
-### 4. Exécuter le script de construction pour Linux
+### 5. Exécuter le script de construction pour Linux
 
 ```bash
 node scripts/build-electron.js linux
 ```
 
-### 5. Exécuter le script de construction pour toutes les plateformes
+### 6. Exécuter le script de construction pour toutes les plateformes
 
 ```bash
 node scripts/build-electron.js
@@ -49,8 +55,8 @@ Après la construction, vous trouverez les installateurs et les fichiers binaire
 Pour développer et tester l'application en mode Electron sans créer d'installateur, vous pouvez utiliser les commandes suivantes:
 
 ```bash
-# Installer Electron (uniquement la première fois)
-npm install electron --no-save
+# Compiler le fichier main.ts de l'application Electron
+npx tsc src/electron/main.ts --outDir electron
 
 # Lancer le serveur de développement Vite
 npm run dev
