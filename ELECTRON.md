@@ -19,7 +19,7 @@ npm install
 ### 2. Installer les dépendances d'Electron (première fois uniquement)
 
 ```bash
-npm install electron @types/electron --no-save
+npm install electron@latest --no-save
 ```
 
 ### 3. Exécuter le script de construction pour Windows
@@ -55,14 +55,20 @@ Après la construction, vous trouverez les installateurs et les fichiers binaire
 Pour développer et tester l'application en mode Electron sans créer d'installateur, vous pouvez utiliser les commandes suivantes:
 
 ```bash
-# Compiler le fichier main.ts de l'application Electron
-npx tsc src/electron/main.ts --outDir electron
+# Compiler les fichiers TypeScript de l'application Electron
+npx tsc -p tsconfig.electron.json
 
 # Lancer le serveur de développement Vite
 npm run dev
 
 # Dans un autre terminal, lancer Electron qui pointera vers le serveur de développement
-npx electron electron/main.js
+NODE_ENV=development npx electron electron/main.js
+```
+
+Pour Windows, utilisez la syntaxe suivante pour définir la variable d'environnement:
+
+```bash
+set NODE_ENV=development && npx electron electron/main.js
 ```
 
 ## Notes importantes

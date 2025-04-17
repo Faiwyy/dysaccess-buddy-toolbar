@@ -11,7 +11,7 @@ if (!fs.existsSync(path.join(__dirname, '../electron'))) {
 // Compile TypeScript to JavaScript
 console.log('Compiling TypeScript...');
 try {
-  execSync('npx tsc src/electron/main.ts --outDir electron', { stdio: 'inherit' });
+  execSync('npx tsc -p tsconfig.electron.json', { stdio: 'inherit' });
 } catch (error) {
   console.error('Error compiling TypeScript:', error);
   process.exit(1);

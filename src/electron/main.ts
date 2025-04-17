@@ -1,6 +1,8 @@
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import { exec } from 'child_process';
+import * as os from 'os';
 
 // Keep a global reference of the window object to prevent garbage collection
 let mainWindow: BrowserWindow | null = null;
@@ -13,6 +15,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
+      preload: path.join(__dirname, 'preload.js')
     },
     autoHideMenuBar: true,
     icon: path.join(__dirname, '../public/favicon.ico')
@@ -47,9 +50,40 @@ function createWindow() {
   });
 }
 
+// Function to open a local application
+function openLocalApplication(appPath: string) {
+  const platform = os.platform();
+
+  try {
+    if (platform === 'win32') {
+      exec(`start ${appPath}`);
+    } else if (platform === 'darwin') {
+      exec(`open ${appPath}`);
+    } else if (platform === 'linux') {
+      exec(`xdg-open ${appPath}`);
+    } else {
+      dialog.showErrorBox('Error', `Unsupported platform: ${platform}`);
+    }
+  } catch (error) {
+    dialog.showErrorBox('Error', `Failed to open application: ${error}`);
+  }
+}
+
+// Register IPC handlers
+function registerIpcHandlers() {
+  ipcMain.handle('open-url', async (_event, url) => {
+    return shell.openExternal(url);
+  });
+
+  ipcMain.handle('open-local-app', async (_event, appPath) => {
+    return openLocalApplication(appPath);
+  });
+}
+
 // This method will be called when Electron has finished initialization
 app.whenReady().then(() => {
   createWindow();
+  registerIpcHandlers();
 
   app.on('activate', () => {
     // On macOS it's common to re-create a window when the dock icon is clicked
