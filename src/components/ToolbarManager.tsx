@@ -17,16 +17,41 @@ import {
   PenLine,
   Calculator,
   Scissors,
+  FileAudio,
+  Gamepad,
+  Book,
+  Palette,
+  Ear,
+  Brain,
+  Speech,
+  Clock,
+  Sparkles,
+  Puzzle,
+  BarChart,
+  Hand,
+  Pencil,
+  Headphones,
+  Eye,
+  Map,
+  Stethoscope,
+  MessageSquare,
+  Smartphone,
+  Bot,
+  Film,
+  Mail,
+  Speaker,
   LucideIcon
 } from "lucide-react";
 import AppShortcut from "./AppShortcut";
 import BuddyMascot from "./BuddyMascot";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 // Types pour les raccourcis d'applications
 export interface AppShortcutData {
@@ -34,6 +59,8 @@ export interface AppShortcutData {
   name: string;
   icon: LucideIcon;
   color: string;
+  type: "app" | "web";
+  url?: string;
 }
 
 // Icônes disponibles pour la personnalisation
@@ -48,25 +75,49 @@ const availableIcons: Record<string, LucideIcon> = {
   BookOpen,
   PenLine,
   Calculator,
-  Scissors
+  Scissors,
+  FileAudio,
+  Gamepad,
+  Book,
+  Palette,
+  Ear,
+  Brain,
+  Speech,
+  Clock,
+  Sparkles,
+  Puzzle,
+  BarChart,
+  Hand,
+  Pencil,
+  Headphones,
+  Eye,
+  Map,
+  Stethoscope,
+  MessageSquare,
+  Smartphone,
+  Bot,
+  Film,
+  Mail,
+  Speaker
 };
 
 // Couleurs disponibles pour la personnalisation
 const availableColors: Record<string, string> = {
   "Bleu": "bg-dysaccess-blue",
-  "Jaune": "bg-dysaccess-yellow",
+  "Orange": "bg-orange-400",
   "Violet": "bg-dysaccess-purple",
+  "Vert": "bg-green-400",
+  "Rose": "bg-pink-400",
   "Bleu clair": "bg-dysaccess-light-blue",
-  "Jaune clair": "bg-dysaccess-light-yellow",
   "Violet clair": "bg-dysaccess-light-purple"
 };
 
 // Applications par défaut
 const defaultApps: AppShortcutData[] = [
-  { id: "1", name: "LibreOffice", icon: FileText, color: "bg-dysaccess-blue" },
-  { id: "2", name: "Navigateur", icon: Globe, color: "bg-dysaccess-yellow" },
-  { id: "3", name: "Lexibar", icon: Keyboard, color: "bg-dysaccess-purple" },
-  { id: "4", name: "AsTeRICS", icon: Grid, color: "bg-dysaccess-light-blue" }
+  { id: "1", name: "LibreOffice", icon: FileText, color: "bg-dysaccess-blue", type: "app" },
+  { id: "2", name: "Navigateur", icon: Globe, color: "bg-orange-400", type: "web", url: "https://www.google.fr" },
+  { id: "3", name: "Lexibar", icon: Keyboard, color: "bg-dysaccess-purple", type: "app" },
+  { id: "4", name: "AsTeRICS", icon: Grid, color: "bg-dysaccess-light-blue", type: "web", url: "https://grid.asterics.eu" }
 ];
 
 const ToolbarManager: React.FC = () => {
@@ -80,6 +131,8 @@ const ToolbarManager: React.FC = () => {
   const [selectedColor, setSelectedColor] = useState<string>("Bleu");
   const [dragPosition, setDragPosition] = useState({ x: 50, y: 50 });
   const [isDragging, setIsDragging] = useState(false);
+  const [appType, setAppType] = useState<"app" | "web">("app");
+  const [webUrl, setWebUrl] = useState("");
   const { toast } = useToast();
 
   // Gestion du déplacement de la barre d'outils
@@ -114,10 +167,18 @@ const ToolbarManager: React.FC = () => {
 
   // Simuler l'ouverture d'une application
   const openApp = (app: AppShortcutData) => {
-    toast({
-      title: `Ouverture de ${app.name}`,
-      description: "Cette action ouvrirait l'application dans un environnement réel.",
-    });
+    if (app.type === "web" && app.url) {
+      toast({
+        title: `Ouverture de ${app.name}`,
+        description: `Navigation vers ${app.url}`,
+      });
+      // Dans une version réelle, on pourrait utiliser window.open(app.url, '_blank')
+    } else {
+      toast({
+        title: `Ouverture de ${app.name}`,
+        description: "Cette action ouvrirait l'application dans un environnement réel.",
+      });
+    }
   };
 
   // Supprimer une application
@@ -136,15 +197,27 @@ const ToolbarManager: React.FC = () => {
       return;
     }
 
+    if (appType === "web" && !webUrl.trim()) {
+      toast({
+        title: "Erreur",
+        description: "L'URL du site web ne peut pas être vide.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const newApp: AppShortcutData = {
       id: Date.now().toString(),
       name: newAppName,
       icon: availableIcons[selectedIcon],
-      color: availableColors[selectedColor]
+      color: availableColors[selectedColor],
+      type: appType,
+      ...(appType === "web" && { url: webUrl })
     };
 
     setApps([...apps, newApp]);
     setNewAppName("");
+    setWebUrl("");
     setIsAddDialogOpen(false);
     
     toast({
@@ -171,7 +244,7 @@ const ToolbarManager: React.FC = () => {
         }}
       >
         {/* Mascotte Buddy (toujours à gauche) */}
-        <div className="mr-3 cursor-pointer" onMouseDown={handleMouseDown}>
+        <div className="mr-3 cursor-move" onMouseDown={handleMouseDown}>
           <BuddyMascot showTip={showTip} />
         </div>
         
@@ -216,7 +289,7 @@ const ToolbarManager: React.FC = () => {
           <button
             onClick={toggleEditMode}
             className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-              isEditing ? "bg-dysaccess-yellow text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              isEditing ? "bg-green-500 text-white" : "bg-dysaccess-purple bg-opacity-80 text-white hover:bg-opacity-100"
             }`}
             aria-label={isEditing ? "Terminer la configuration" : "Configurer la barre d'outils"}
           >
@@ -230,62 +303,116 @@ const ToolbarManager: React.FC = () => {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="dyslexic-friendly">Ajouter un raccourci</DialogTitle>
+            <DialogDescription className="dyslexic-friendly">
+              Choisissez entre une application installée ou un site web
+            </DialogDescription>
           </DialogHeader>
           
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="app-name" className="text-right dyslexic-friendly">
-                Nom
-              </Label>
-              <Input
-                id="app-name"
-                value={newAppName}
-                onChange={(e) => setNewAppName(e.target.value)}
-                className="col-span-3"
-                placeholder="Nom de l'application"
-              />
-            </div>
+          <Tabs defaultValue="app" onValueChange={(value) => setAppType(value as "app" | "web")}>
+            <TabsList className="grid w-full grid-cols-2 mb-4">
+              <TabsTrigger value="app" className="dyslexic-friendly">Application</TabsTrigger>
+              <TabsTrigger value="web" className="dyslexic-friendly">Site Web</TabsTrigger>
+            </TabsList>
             
+            <TabsContent value="app">
+              <div className="grid gap-4 py-2">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="app-name" className="text-right dyslexic-friendly">
+                    Nom
+                  </Label>
+                  <Input
+                    id="app-name"
+                    value={newAppName}
+                    onChange={(e) => setNewAppName(e.target.value)}
+                    className="col-span-3"
+                    placeholder="Nom de l'application"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="web">
+              <div className="grid gap-4 py-2">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="web-name" className="text-right dyslexic-friendly">
+                    Nom
+                  </Label>
+                  <Input
+                    id="web-name"
+                    value={newAppName}
+                    onChange={(e) => setNewAppName(e.target.value)}
+                    className="col-span-3"
+                    placeholder="Nom du site web"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="web-url" className="text-right dyslexic-friendly">
+                    URL
+                  </Label>
+                  <Input
+                    id="web-url"
+                    value={webUrl}
+                    onChange={(e) => setWebUrl(e.target.value)}
+                    className="col-span-3"
+                    placeholder="https://exemple.com"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+          
+          <div className="grid gap-4 py-2">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="app-icon" className="text-right dyslexic-friendly">
                 Icône
               </Label>
-              <Select onValueChange={setSelectedIcon} defaultValue={selectedIcon}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Choisir une icône" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.keys(availableIcons).map((iconName) => (
-                    <SelectItem key={iconName} value={iconName}>
-                      <div className="flex items-center">
-                        {React.createElement(availableIcons[iconName], { className: "h-4 w-4 mr-2" })}
-                        {iconName}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="col-span-3">
+                <Select onValueChange={setSelectedIcon} defaultValue={selectedIcon}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choisir une icône" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px] overflow-y-auto">
+                    <div className="grid grid-cols-4 gap-2 p-2">
+                      {Object.keys(availableIcons).map((iconName) => (
+                        <SelectItem key={iconName} value={iconName} className="flex flex-col items-center justify-center p-2 hover:bg-gray-100 rounded cursor-pointer">
+                          <div className="h-8 w-8 bg-gray-200 rounded-lg flex items-center justify-center mb-1">
+                            {React.createElement(availableIcons[iconName], { className: "h-5 w-5" })}
+                          </div>
+                          <span className="text-xs text-center">{iconName}</span>
+                        </SelectItem>
+                      ))}
+                    </div>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="app-color" className="text-right dyslexic-friendly">
                 Couleur
               </Label>
-              <Select onValueChange={setSelectedColor} defaultValue={selectedColor}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Choisir une couleur" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.keys(availableColors).map((colorName) => (
-                    <SelectItem key={colorName} value={colorName}>
-                      <div className="flex items-center">
-                        <div className={`w-4 h-4 rounded-full ${availableColors[colorName]} mr-2`}></div>
-                        {colorName}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <RadioGroup 
+                defaultValue={selectedColor} 
+                onValueChange={setSelectedColor}
+                className="col-span-3 flex flex-wrap gap-2"
+              >
+                {Object.entries(availableColors).map(([colorName, colorClass]) => (
+                  <div key={colorName} className="flex items-center">
+                    <RadioGroupItem 
+                      value={colorName} 
+                      id={`color-${colorName}`} 
+                      className="sr-only peer"
+                    />
+                    <Label
+                      htmlFor={`color-${colorName}`}
+                      className={`w-8 h-8 rounded-full ${colorClass} cursor-pointer peer-focus:ring-2 peer-focus:ring-offset-2 peer-focus:ring-offset-background peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-offset-2 peer-data-[state=checked]:ring-offset-background peer-data-[state=checked]:ring-dysaccess-purple`}
+                    >
+                      <span className="sr-only">{colorName}</span>
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
             </div>
           </div>
           

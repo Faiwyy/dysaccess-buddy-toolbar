@@ -1,3 +1,4 @@
+
 import React from "react";
 import ToolbarManager from "../components/ToolbarManager";
 
@@ -22,12 +23,16 @@ const Index = () => {
             <span>La barre d'outils flottante affiche les raccourcis vers tes applications.</span>
           </li>
           <li className="flex items-start">
-            <span className="inline-flex items-center justify-center w-6 h-6 bg-dysaccess-yellow text-white rounded-full mr-3 flex-shrink-0">2</span>
-            <span>Utilise Buddy (la mascotte) pour déplacer la barre où tu veux à l'écran.</span>
+            <span className="inline-flex items-center justify-center w-6 h-6 bg-dysaccess-purple text-white rounded-full mr-3 flex-shrink-0">2</span>
+            <span><strong>Clique et fais glisser sur Buddy</strong> (la mascotte) pour déplacer la barre où tu veux à l'écran.</span>
           </li>
           <li className="flex items-start">
-            <span className="inline-flex items-center justify-center w-6 h-6 bg-dysaccess-purple text-white rounded-full mr-3 flex-shrink-0">3</span>
-            <span>Clique sur le bouton d'engrenage pour ajouter ou supprimer des applications.</span>
+            <span className="inline-flex items-center justify-center w-6 h-6 bg-green-500 text-white rounded-full mr-3 flex-shrink-0">3</span>
+            <span>Clique sur le bouton d'engrenage violet pour ajouter ou supprimer des applications.</span>
+          </li>
+          <li className="flex items-start">
+            <span className="inline-flex items-center justify-center w-6 h-6 bg-orange-400 text-white rounded-full mr-3 flex-shrink-0">4</span>
+            <span>Tu peux ajouter des applications installées sur ton ordinateur ou des sites web.</span>
           </li>
         </ul>
       </div>

@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -65,12 +66,10 @@ export default {
                 // DysAccess custom colors
                 'dysaccess': {
                     'blue': '#A6D1E6',
-                    'yellow': '#FEFCBF',
                     'purple': '#D8BFD8',
                     'background': '#FEFEFE',
                     'text': '#333333',
                     'light-blue': '#C7E2F0',
-                    'light-yellow': '#FFF9D6',
                     'light-purple': '#E7D9E7'
                 }
 			},
