@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -63,14 +62,21 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-                // DysAccess custom colors
                 'dysaccess': {
                     'blue': '#A6D1E6',
                     'purple': '#D8BFD8',
                     'background': '#FEFEFE',
                     'text': '#333333',
                     'light-blue': '#C7E2F0',
-                    'light-purple': '#E7D9E7'
+                    'light-purple': '#E7D9E7',
+                    'soft-green': '#F2FCE2',
+                    'soft-yellow': '#FEF7CD',
+                    'soft-orange': '#FEC6A1',
+                    'soft-purple': '#E5DEFF',
+                    'soft-pink': '#FFDEE2',
+                    'soft-peach': '#FDE1D3',
+                    'soft-blue': '#D3E4FD',
+                    'soft-gray': '#F1F0FB'
                 }
 			},
 			borderRadius: {
