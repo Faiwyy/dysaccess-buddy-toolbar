@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   Plus, 
@@ -61,6 +60,7 @@ export interface AppShortcutData {
   color: string;
   type: "app" | "web";
   url?: string;
+  localPath?: string;
 }
 
 // Icônes disponibles pour la personnalisation
@@ -109,14 +109,22 @@ const availableColors: Record<string, string> = {
   "Vert": "bg-green-400",
   "Rose": "bg-pink-400",
   "Bleu clair": "bg-dysaccess-light-blue",
-  "Violet clair": "bg-dysaccess-light-purple"
+  "Violet clair": "bg-dysaccess-light-purple",
+  "Vert pastel": "bg-dysaccess-soft-green",
+  "Jaune pastel": "bg-dysaccess-soft-yellow",
+  "Orange pastel": "bg-dysaccess-soft-orange",
+  "Violet pastel": "bg-dysaccess-soft-purple",
+  "Rose pastel": "bg-dysaccess-soft-pink",
+  "Pêche pastel": "bg-dysaccess-soft-peach",
+  "Bleu pastel": "bg-dysaccess-soft-blue",
+  "Gris pastel": "bg-dysaccess-soft-gray"
 };
 
 // Applications par défaut
 const defaultApps: AppShortcutData[] = [
-  { id: "1", name: "LibreOffice", icon: FileText, color: "bg-dysaccess-blue", type: "app" },
+  { id: "1", name: "LibreOffice", icon: FileText, color: "bg-dysaccess-blue", type: "app", localPath: "libreoffice" },
   { id: "2", name: "Navigateur", icon: Globe, color: "bg-orange-400", type: "web", url: "https://www.google.fr" },
-  { id: "3", name: "Lexibar", icon: Keyboard, color: "bg-dysaccess-purple", type: "app" },
+  { id: "3", name: "Lexibar", icon: Keyboard, color: "bg-dysaccess-purple", type: "app", localPath: "lexibar" },
   { id: "4", name: "AsTeRICS", icon: Grid, color: "bg-dysaccess-light-blue", type: "web", url: "https://grid.asterics.eu" }
 ];
 
@@ -134,6 +142,11 @@ const ToolbarManager: React.FC = () => {
   const [appType, setAppType] = useState<"app" | "web">("app");
   const [webUrl, setWebUrl] = useState("");
   const { toast } = useToast();
+
+  // Fonction pour détecter si on est dans Electron
+  const isElectron = () => {
+    return window.navigator.userAgent.indexOf('Electron') !== -1;
+  };
 
   // Gestion du déplacement de la barre d'outils
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -168,16 +181,29 @@ const ToolbarManager: React.FC = () => {
   // Simuler l'ouverture d'une application
   const openApp = (app: AppShortcutData) => {
     if (app.type === "web" && app.url) {
+      if (isElectron()) {
+        window.open(app.url, '_blank');
+      } else {
+        window.open(app.url, '_blank');
+      }
+      
       toast({
         title: `Ouverture de ${app.name}`,
         description: `Navigation vers ${app.url}`,
       });
-      // Dans une version réelle, on pourrait utiliser window.open(app.url, '_blank')
-    } else {
-      toast({
-        title: `Ouverture de ${app.name}`,
-        description: "Cette action ouvrirait l'application dans un environnement réel.",
-      });
+    } else if (app.type === "app" && app.localPath) {
+      if (isElectron()) {
+        console.log(`Launching local application: ${app.localPath}`);
+        toast({
+          title: `Ouverture de ${app.name}`,
+          description: `Lancement de l'application locale ${app.localPath}`,
+        });
+      } else {
+        toast({
+          title: `Ouverture de ${app.name}`,
+          description: "Cette action ouvrirait l'application en version desktop.",
+        });
+      }
     }
   };
 
