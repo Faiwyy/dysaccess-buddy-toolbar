@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 @layer base {
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -32,7 +34,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -97,5 +99,38 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Quicksand', sans-serif;
+  }
+
+  .dyslexic-friendly {
+    letter-spacing: 0.05em;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+
+  .toolbar-shadow {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .buddy-bounce {
+    animation: bounce 2s ease infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .toolbar-draggable {
+    cursor: move;
+  }
+
+  .float-toolbar {
+    position: fixed;
+    z-index: 50;
   }
 }

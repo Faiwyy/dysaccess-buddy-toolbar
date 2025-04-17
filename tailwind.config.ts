@@ -61,7 +61,18 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+                // DysAccess custom colors
+                'dysaccess': {
+                    'blue': '#A6D1E6',
+                    'yellow': '#FEFCBF',
+                    'purple': '#D8BFD8',
+                    'background': '#FEFEFE',
+                    'text': '#333333',
+                    'light-blue': '#C7E2F0',
+                    'light-yellow': '#FFF9D6',
+                    'light-purple': '#E7D9E7'
+                }
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
