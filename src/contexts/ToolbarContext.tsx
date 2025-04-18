@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { LucideIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -47,10 +46,10 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isEditing, setIsEditing] = useState(false);
   const [showTip, setShowTip] = useState(true);
   const [dragPosition, setDragPosition] = useState(() => {
-    // Calculer la position centrale par défaut
+    // Calculer la position en haut de la page, centrée horizontalement
     const centerX = window.innerWidth / 2 - 200; // Ajustement pour centrer la largeur de la toolbar
-    const centerY = window.innerHeight / 2 - 50; // Ajustement pour centrer la hauteur de la toolbar
-    return { x: centerX, y: centerY };
+    const topY = 200; // Position à 200px du haut de la page
+    return { x: centerX, y: topY };
   });
   const [isDragging, setIsDragging] = useState(false);
   const { toast } = useToast();
