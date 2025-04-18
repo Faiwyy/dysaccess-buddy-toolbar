@@ -4,16 +4,16 @@ import ToolbarManager from "../components/ToolbarManager";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-dysaccess-light-blue to-white">
-      <div className="text-center mb-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-dysaccess-light-blue to-white relative">
+      <div className="text-center mb-4 relative z-10">
         <h1 className="text-4xl font-bold mb-4 text-dysaccess-text dyslexic-friendly">DysAccess</h1>
-        <p className="text-xl text-dysaccess-text dyslexic-friendly max-w-md">
+        <p className="text-xl text-dysaccess-text dyslexic-friendly max-w-md mb-4">
           Barre d'outils pour faciliter l'autonomie des enfants dyslexiques
         </p>
       </div>
       
       {/* Instructions d'utilisation */}
-      <div className="max-w-2xl p-6 bg-white rounded-xl shadow-md mb-8">
+      <div className="max-w-2xl p-6 bg-white rounded-xl shadow-md mb-8 relative z-10">
         <h2 className="text-xl font-semibold mb-4 text-dysaccess-text dyslexic-friendly">
           Comment utiliser DysAccess
         </h2>
@@ -37,7 +37,7 @@ const Index = () => {
         </ul>
       </div>
       
-      {/* La barre d'outils (rendue initialement au centre de la page) */}
+      {/* La barre d'outils */}
       <ToolbarManager />
       
       {/* Note en bas de page pour les orthophonistes */}
