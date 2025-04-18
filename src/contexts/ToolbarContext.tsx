@@ -46,8 +46,8 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isEditing, setIsEditing] = useState(false);
   const [showTip, setShowTip] = useState(true);
   const [dragPosition, setDragPosition] = useState(() => {
-    const centerX = window.innerWidth / 2 - 200;
-    const topY = 120;
+    const centerX = window.innerWidth - 300; 
+    const topY = window.innerHeight - 150;
     return { x: centerX, y: topY };
   });
   const [isDragging, setIsDragging] = useState(false);
@@ -152,3 +152,5 @@ export const useToolbar = () => {
   }
   return context;
 };
+
+export default ToolbarProvider;
