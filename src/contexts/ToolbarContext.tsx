@@ -46,9 +46,8 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isEditing, setIsEditing] = useState(false);
   const [showTip, setShowTip] = useState(true);
   const [dragPosition, setDragPosition] = useState(() => {
-    // Calculer la position en haut de la page, centrée horizontalement
-    const centerX = window.innerWidth / 2 - 200; // Ajustement pour centrer la largeur de la toolbar
-    const topY = 200; // Position à 200px du haut de la page
+    const centerX = window.innerWidth / 2 - 200;
+    const topY = 120;
     return { x: centerX, y: topY };
   });
   const [isDragging, setIsDragging] = useState(false);
@@ -64,7 +63,7 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
         setDragPosition({
-          x: e.clientX - 100, // Adjustment to center
+          x: e.clientX - 100,
           y: e.clientY - 25
         });
       }
