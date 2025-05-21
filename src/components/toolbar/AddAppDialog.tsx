@@ -23,6 +23,7 @@ const AddAppDialog: React.FC<AddAppDialogProps> = ({ isOpen, onOpenChange }) => 
   const [selectedColor, setSelectedColor] = useState<string>("Bleu");
   const [appType, setAppType] = useState<"app" | "web">("app");
   const [webUrl, setWebUrl] = useState("");
+  const [localPath, setLocalPath] = useState("");
   const { setApps, apps } = useToolbar();
   const { toast } = useToast();
 
@@ -45,18 +46,28 @@ const AddAppDialog: React.FC<AddAppDialogProps> = ({ isOpen, onOpenChange }) => 
       return;
     }
 
+    if (appType === "app" && !localPath.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Le chemin d'accès de l'application ne peut pas être vide.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const newApp = {
       id: Date.now().toString(),
       name: newAppName,
       icon: iconRegistry[selectedIcon],
       color: colorRegistry[selectedColor],
       type: appType,
-      ...(appType === "web" ? { url: webUrl } : {})
+      ...(appType === "web" ? { url: webUrl } : { localPath: localPath })
     };
 
     setApps([...apps, newApp]);
     setNewAppName("");
     setWebUrl("");
+    setLocalPath("");
     onOpenChange(false);
     
     toast({
@@ -93,6 +104,19 @@ const AddAppDialog: React.FC<AddAppDialogProps> = ({ isOpen, onOpenChange }) => 
                   onChange={(e) => setNewAppName(e.target.value)}
                   className="col-span-3"
                   placeholder="Nom de l'application"
+                />
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="app-path" className="text-right dyslexic-friendly">
+                  Chemin
+                </Label>
+                <Input
+                  id="app-path"
+                  value={localPath}
+                  onChange={(e) => setLocalPath(e.target.value)}
+                  className="col-span-3"
+                  placeholder="C:\Program Files\Application\app.exe"
                 />
               </div>
             </div>

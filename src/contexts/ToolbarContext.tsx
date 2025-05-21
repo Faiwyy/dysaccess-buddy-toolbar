@@ -47,9 +47,10 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isEditing, setIsEditing] = useState(false);
   const [showTip, setShowTip] = useState(true);
   const [dragPosition, setDragPosition] = useState(() => {
-    const centerX = window.innerWidth - 300; 
-    const topY = window.innerHeight - 150;
-    return { x: centerX, y: topY };
+    // Position initiale centrée sur l'écran
+    const centerX = window.innerWidth / 2 - 125; // Largeur approximative de la barre d'outils divisée par 2
+    const centerY = window.innerHeight / 2 - 30; // Hauteur approximative de la barre d'outils divisée par 2
+    return { x: centerX, y: centerY };
   });
   const [isDragging, setIsDragging] = useState(false);
   const { toast } = useToast();

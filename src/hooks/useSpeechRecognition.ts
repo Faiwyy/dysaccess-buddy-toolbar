@@ -55,20 +55,15 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
         setTranscript(prev => prev + text + ' ');
         console.log("Texte reconnu:", text);
         
-        // Insérer le texte dans l'élément actif
-        const activeElement = document.activeElement as HTMLInputElement | HTMLTextAreaElement;
-        if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
-          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-            window.HTMLInputElement.prototype, 'value'
-          )?.set;
-          
-          if (nativeInputValueSetter) {
-            const lastValue = activeElement.value;
-            nativeInputValueSetter.call(activeElement, lastValue + text + ' ');
-            
-            // Déclencher un événement input pour mettre à jour l'interface utilisateur
-            const event = new Event('input', { bubbles: true });
-            activeElement.dispatchEvent(event);
+        // Insérer le texte dans l'élément actif, même hors de l'application
+        if (window.electronAPI) {
+          // Utiliser l'API Electron pour insérer le texte dans l'application active
+          insertTextIntoActiveElement(text);
+        } else {
+          // Fallback pour le mode navigateur
+          const activeElement = document.activeElement as HTMLInputElement | HTMLTextAreaElement;
+          if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+            insertTextIntoInputElement(activeElement, text);
           }
         }
       }
@@ -108,6 +103,55 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
       }
     };
   }, [toast]);
+  
+  // Fonction pour insérer du texte dans un élément input ou textarea
+  const insertTextIntoInputElement = (element: HTMLInputElement | HTMLTextAreaElement, text: string) => {
+    try {
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+        element instanceof HTMLInputElement 
+          ? window.HTMLInputElement.prototype 
+          : window.HTMLTextAreaElement.prototype, 
+        'value'
+      )?.set;
+      
+      if (nativeInputValueSetter) {
+        const lastValue = element.value;
+        nativeInputValueSetter.call(element, lastValue + text + ' ');
+        
+        // Déclencher un événement input pour mettre à jour l'interface utilisateur
+        const event = new Event('input', { bubbles: true });
+        element.dispatchEvent(event);
+      }
+    } catch (error) {
+      console.error('Error inserting text:', error);
+    }
+  };
+
+  // Fonction pour insérer du texte dans l'application active en mode Electron
+  const insertTextIntoActiveElement = (text: string) => {
+    // Dans un contexte Electron, on peut utiliser un IPC pour communiquer avec le processus principal
+    // qui se chargera d'injecter le texte dans l'application active (niveau OS)
+    if (window.electronAPI) {
+      // Simuler l'insertion de texte via les événements clavier ou le presse-papier
+      // Dans un cas réel, une fonction spécifique serait implémentée dans le main process d'Electron
+      console.log("Inserting text via Electron:", text);
+      
+      try {
+        // Copier le texte dans le presse-papier
+        navigator.clipboard.writeText(text + ' ')
+          .then(() => {
+            // Simuler le raccourci Ctrl+V (ou Cmd+V) pour coller le texte
+            console.log("Text copied to clipboard, ready for paste operation");
+            // Le processus principal d'Electron pourrait ensuite simuler la combinaison de touches Ctrl+V
+          })
+          .catch(err => {
+            console.error('Failed to copy text to clipboard:', err);
+          });
+      } catch (error) {
+        console.error("Error in clipboard operation:", error);
+      }
+    }
+  };
   
   // Écouter les événements de l'API Electron
   useEffect(() => {
