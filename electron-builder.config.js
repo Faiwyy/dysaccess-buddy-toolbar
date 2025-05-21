@@ -10,7 +10,7 @@ module.exports = {
   asar: true,
   directories: {
     output: "release",
-    buildResources: "public",
+    buildResources: "build/resources",
   },
   files: [
     "dist/**/*",
@@ -23,20 +23,29 @@ module.exports = {
         arch: ["x64"]
       }
     ],
+    icon: "build/resources/icon.ico",
     artifactName: "${productName}-${version}-Setup.${ext}"
   },
   nsis: {
     oneClick: false,
     perMachine: false,
     allowToChangeInstallationDirectory: true,
-    deleteAppDataOnUninstall: false
+    deleteAppDataOnUninstall: false,
+    createDesktopShortcut: true,
+    createStartMenuShortcut: true,
+    runAfterFinish: true
   },
   mac: {
     target: ["dmg"],
-    artifactName: "${productName}-${version}-Installer.${ext}"
+    icon: "public/favicon.ico", 
+    artifactName: "${productName}-${version}-Installer.${ext}",
+    category: "public.app-category.education",
+    hardenedRuntime: true
   },
   linux: {
-    target: ["AppImage"],
-    artifactName: "${productName}-${version}.${ext}"
+    target: ["AppImage", "deb", "rpm"],
+    artifactName: "${productName}-${version}.${ext}",
+    icon: "public/favicon.ico",
+    category: "Education"
   }
 };

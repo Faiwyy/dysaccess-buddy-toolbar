@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { LucideIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -152,5 +153,3 @@ export const useToolbar = () => {
   }
   return context;
 };
-
-export default ToolbarProvider;

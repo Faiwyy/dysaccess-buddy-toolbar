@@ -25,6 +25,23 @@ try {
   process.exit(1);
 }
 
+// Copy icons and resources
+console.log('Copying resources...');
+try {
+  // Ensure directory exists
+  if (!fs.existsSync(path.join(__dirname, '../build/resources'))) {
+    fs.mkdirSync(path.join(__dirname, '../build/resources'), { recursive: true });
+  }
+  
+  // Copy favicon for use as app icon
+  fs.copyFileSync(
+    path.join(__dirname, '../public/favicon.ico'), 
+    path.join(__dirname, '../build/resources/icon.ico')
+  );
+} catch (error) {
+  console.error('Error copying resources:', error);
+}
+
 console.log('Installing Electron builder...');
 try {
   execSync('npm install electron electron-builder --no-save', { stdio: 'inherit' });
