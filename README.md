@@ -1,4 +1,5 @@
-# Welcome to your Lovable project
+
+# Welcome to your DysAccess Buddy project
 
 ## Project info
 
@@ -59,6 +60,82 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Electron
+
+## Building Desktop Applications
+
+This project supports building desktop applications for Windows, macOS, and Linux using Electron.
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm (v6 or higher)
+- For building Windows apps: Windows or WSL
+- For building macOS apps: macOS is required
+- For building Linux apps: Any OS can build for Linux
+
+### Building Desktop Applications
+
+To build desktop applications for different platforms, follow these steps:
+
+```sh
+# Step 1: Clone the repository and install dependencies
+git clone <YOUR_GIT_URL>
+cd <YOUR_PROJECT_NAME>
+npm install
+
+# Step 2: Build for specific platform
+# For Windows (.exe)
+node scripts/build-electron.js win
+
+# For macOS (.dmg)
+node scripts/build-electron.js mac
+
+# For Linux (.AppImage, .deb, .rpm)
+node scripts/build-electron.js linux
+
+# For all platforms
+node scripts/build-electron.js
+```
+
+### Output Files
+
+After building, you will find the installation packages in the `release` directory:
+
+- Windows: `release/DysAccess Buddy-[version]-Setup.exe`
+- macOS: `release/DysAccess Buddy-[version]-Installer.dmg`
+- Linux: `release/DysAccess Buddy-[version].AppImage`, `.deb`, and `.rpm` files
+
+### Features of the Desktop Application
+
+- **Floating Toolbar**: Always accessible on your desktop
+- **Local Application Launcher**: Launch applications installed on your computer
+- **Web Application Launcher**: Open websites in your default browser
+- **Voice Dictation**: Type with your voice in any application
+- **Always on Top**: Stays visible above other windows
+- **Auto-start**: Option to launch at system startup
+- **System Tray Icon**: Quick access to settings and control
+
+### Development Mode
+
+For development and testing without building installation packages:
+
+```sh
+# Compile TypeScript files for Electron
+npx tsc -p tsconfig.electron.json
+
+# Start development server
+npm run dev
+
+# In another terminal, run Electron pointing to the development server
+# For Windows:
+set NODE_ENV=development && npx electron electron/main.js
+
+# For macOS/Linux:
+NODE_ENV=development npx electron electron/main.js
+```
+
+For more detailed information, see the ELECTRON.md file in this repository.
 
 ## How can I deploy this project?
 
@@ -68,6 +145,6 @@ Simply open [Lovable](https://lovable.dev/projects/5ea874f3-7aef-41cb-bfd4-1d42e
 
 Yes, you can!
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+To connect a domain, navigate to Project > Settings > Domains in Lovable and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
