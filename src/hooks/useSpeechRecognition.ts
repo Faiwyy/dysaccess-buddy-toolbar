@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from './use-toast';
 
 interface UseSpeechRecognitionReturn {
@@ -15,10 +15,10 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
   const [transcript, setTranscript] = useState('');
   const { toast } = useToast();
   
-  // Create a reference to the SpeechRecognition object
-  const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
+  // Utiliser useRef pour stocker l'instance de reconnaissance vocale
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   
-  // Initialize speech recognition
+  // Initialiser la reconnaissance vocale une seule fois
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
@@ -32,14 +32,18 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
     }
     
     const recognitionInstance = new SpeechRecognition();
-    recognitionInstance.lang = 'fr-FR'; // Set language to French
+    recognitionInstance.lang = 'fr-FR'; // Langue française
     recognitionInstance.continuous = true;
     recognitionInstance.interimResults = true;
     
-    recognitionInstance.onstart = () => setIsListening(true);
+    recognitionInstance.onstart = () => {
+      setIsListening(true);
+      console.log("Reconnaissance vocale démarrée");
+    };
     
     recognitionInstance.onend = () => {
       setIsListening(false);
+      console.log("Reconnaissance vocale arrêtée");
     };
     
     recognitionInstance.onresult = (event) => {
@@ -49,8 +53,9 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
       if (result.isFinal) {
         const text = result[0].transcript;
         setTranscript(prev => prev + text + ' ');
+        console.log("Texte reconnu:", text);
         
-        // Try to dispatch an input event to the focused element
+        // Insérer le texte dans l'élément actif
         const activeElement = document.activeElement as HTMLInputElement | HTMLTextAreaElement;
         if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
           const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
@@ -61,7 +66,7 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
             const lastValue = activeElement.value;
             nativeInputValueSetter.call(activeElement, lastValue + text + ' ');
             
-            // Trigger input event
+            // Déclencher un événement input pour mettre à jour l'interface utilisateur
             const event = new Event('input', { bubbles: true });
             activeElement.dispatchEvent(event);
           }
@@ -71,26 +76,46 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
     
     recognitionInstance.onerror = (event) => {
       console.error('Speech recognition error', event.error);
+      
+      // Réinitialiser l'état si une erreur survient
       setIsListening(false);
+      
+      // Message d'erreur personnalisé en fonction du type d'erreur
+      let errorMessage = "Une erreur s'est produite";
+      
+      if (event.error === 'not-allowed' || event.error === 'audio-capture') {
+        errorMessage = "Accès au microphone refusé. Veuillez autoriser l'accès dans les paramètres de votre navigateur.";
+      } else if (event.error === 'network') {
+        errorMessage = "Problème de connexion réseau";
+      } else if (event.error === 'aborted') {
+        // Ne pas afficher de toast si l'utilisateur a simplement arrêté la reconnaissance
+        return;
+      }
+      
       toast({
         title: "Erreur de reconnaissance vocale",
-        description: `Erreur: ${event.error}`,
+        description: errorMessage,
         variant: "destructive"
       });
     };
     
-    setRecognition(recognitionInstance);
+    recognitionRef.current = recognitionInstance;
     
-    // Listen for toggle events from the Electron main process
+    // Nettoyer à la sortie
+    return () => {
+      if (isListening && recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, [toast]);
+  
+  // Écouter les événements de l'API Electron
+  useEffect(() => {
     const handleToggle = () => {
       if (isListening) {
-        recognitionInstance.stop();
+        stopListening();
       } else {
-        try {
-          recognitionInstance.start();
-        } catch (e) {
-          console.error("Error starting speech recognition:", e);
-        }
+        startListening();
       }
     };
     
@@ -98,34 +123,37 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
     
     return () => {
       document.removeEventListener('toggle-speech-recognition', handleToggle);
-      if (isListening && recognitionInstance) {
-        recognitionInstance.stop();
-      }
     };
-  }, [isListening, toast]);
+  }, [isListening]);
   
   const startListening = useCallback(() => {
-    if (recognition && !isListening) {
+    if (recognitionRef.current && !isListening) {
       try {
-        recognition.start();
-        toast({
-          title: "Dictée vocale activée",
-          description: "Parlez maintenant pour dicter du texte"
-        });
+        recognitionRef.current.start();
+        console.log("Démarrage de la reconnaissance vocale");
       } catch (e) {
         console.error("Error starting speech recognition:", e);
+        // Si une erreur se produit lors du démarrage, réinitialiser l'état
+        setIsListening(false);
+        toast({
+          title: "Erreur de démarrage",
+          description: "Impossible de démarrer la reconnaissance vocale",
+          variant: "destructive"
+        });
       }
     }
-  }, [recognition, isListening, toast]);
+  }, [isListening, toast]);
   
   const stopListening = useCallback(() => {
-    if (recognition && isListening) {
-      recognition.stop();
-      toast({
-        title: "Dictée vocale désactivée"
-      });
+    if (recognitionRef.current && isListening) {
+      try {
+        recognitionRef.current.stop();
+        console.log("Arrêt de la reconnaissance vocale");
+      } catch (e) {
+        console.error("Error stopping speech recognition:", e);
+      }
     }
-  }, [recognition, isListening, toast]);
+  }, [isListening]);
   
   const toggleListening = useCallback(() => {
     if (isListening) {

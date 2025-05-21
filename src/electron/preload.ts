@@ -13,4 +13,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
 ipcRenderer.on('toggle-speech-recognition', () => {
   // Dispatch a custom event that the React app can listen for
   document.dispatchEvent(new CustomEvent('toggle-speech-recognition'));
+  console.log("Speech recognition toggle event received from main process");
 });
