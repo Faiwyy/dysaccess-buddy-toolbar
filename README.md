@@ -74,9 +74,9 @@ This project supports building desktop applications for Windows, macOS, and Linu
 - For building macOS apps: macOS is required
 - For building Linux apps: Any OS can build for Linux
 
-### Building Desktop Applications
+### Building Desktop Applications Locally
 
-To build desktop applications for different platforms, follow these steps:
+To build desktop applications for different platforms locally, follow these steps:
 
 ```sh
 # Step 1: Clone the repository and install dependencies
@@ -97,6 +97,23 @@ node scripts/build-electron.js linux
 # For all platforms
 node scripts/build-electron.js
 ```
+
+### Automated Builds with GitHub Actions
+
+This project is configured with GitHub Actions to automatically build and release desktop applications when a new version tag is pushed.
+
+To create a new release:
+
+1. Update the version in `package.json`
+2. Create a new tag and push it to GitHub:
+
+```sh
+git tag v1.0.0  # Change this to your version number
+git push origin v1.0.0
+```
+
+3. GitHub Actions will automatically build the application for Windows, macOS, and Linux
+4. The build artifacts will be available in the "Releases" section of the GitHub repository
 
 ### Output Files
 

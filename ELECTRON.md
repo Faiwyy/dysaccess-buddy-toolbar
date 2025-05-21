@@ -50,6 +50,34 @@ node scripts/build-electron.js
 
 Après la construction, vous trouverez les installateurs et les fichiers binaires dans le dossier `release` à la racine du projet.
 
+## Processus de Release Automatisée
+
+Ce projet est configuré avec GitHub Actions pour automatiquement construire et publier des applications de bureau lorsqu'un nouveau tag de version est poussé.
+
+### Pour créer une nouvelle release:
+
+1. Mettez à jour la version dans `package.json`
+2. Créez un nouveau tag et poussez-le sur GitHub:
+
+```bash
+git tag v1.0.0  # Changez ceci pour votre numéro de version
+git push origin v1.0.0
+```
+
+3. GitHub Actions va automatiquement construire l'application pour Windows, macOS et Linux
+4. Les artefacts de build seront disponibles dans la section "Releases" du dépôt GitHub
+
+### Structure du Workflow GitHub Actions
+
+Le workflow `.github/workflows/build-and-release.yml` effectue les étapes suivantes:
+
+1. Déclenche le build quand un tag commençant par "v" est poussé (ex: v1.0.0)
+2. Configure des environnements de build pour Windows, macOS et Linux
+3. Compile les fichiers TypeScript et construit l'application Vite
+4. Exécute le script de build Electron pour chaque plateforme
+5. Télécharge les artefacts générés (fichiers .exe, .dmg, .AppImage, etc.)
+6. Crée une nouvelle release GitHub avec ces artefacts
+
 ## Développement en mode Electron
 
 Pour développer et tester l'application en mode Electron sans créer d'installateur, vous pouvez utiliser les commandes suivantes:
@@ -82,3 +110,4 @@ set NODE_ENV=development && npx electron electron/main.js
 - Possibilité de lancer des applications locales
 - Possibilité d'ouvrir des sites web dans le navigateur par défaut
 - L'application peut être exécutée au démarrage de l'ordinateur (configurable via l'installateur)
+- La barre d'outils flottante reste toujours visible au-dessus des autres fenêtres
