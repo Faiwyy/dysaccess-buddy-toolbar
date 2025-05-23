@@ -35,11 +35,11 @@ jobs:
       - name: Build Electron app
         run: |
           if [ "${{ matrix.os }}" = "macos-latest" ]; then
-            node scripts/build-electron.js mac
+            node scripts/build-electron.cjs mac
           elif [ "${{ matrix.os }}" = "windows-latest" ]; then
-            node scripts/build-electron.js win
+            node scripts/build-electron.cjs win
           else
-            node scripts/build-electron.js linux
+            node scripts/build-electron.cjs linux
           fi
         shell: bash
 
