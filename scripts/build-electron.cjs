@@ -9,6 +9,20 @@ if (!fs.existsSync(path.join(__dirname, '../electron'))) {
   fs.mkdirSync(path.join(__dirname, '../electron'));
 }
 
+// Function to check if alias resolution is working
+function checkAliasResolution() {
+  console.log('Checking alias resolution...');
+  const srcPath = path.join(__dirname, '../src');
+  const componentsPath = path.join(srcPath, 'components/ui/toaster.tsx');
+  
+  if (!fs.existsSync(componentsPath)) {
+    console.error('Error: toaster.tsx not found at expected path');
+    process.exit(1);
+  }
+  
+  console.log('✓ Source files found');
+}
+
 // Compile TypeScript to JavaScript
 console.log('Compiling TypeScript...');
 try {
@@ -20,9 +34,17 @@ try {
 
 console.log('Building Vite app...');
 try {
-  execSync('npm run build', { stdio: 'inherit' });
+  // Check alias resolution before building
+  checkAliasResolution();
+  
+  // Build with verbose output to catch alias issues
+  execSync('npm run build -- --mode production', { stdio: 'inherit' });
 } catch (error) {
   console.error('Error building app:', error);
+  console.log('\nTroubleshooting: If you see alias resolution errors:');
+  console.log('1. Clear node_modules and reinstall: rm -rf node_modules package-lock.json && npm install');
+  console.log('2. Clear Vite cache: npx vite --force');
+  console.log('3. Check that all @/ imports have corresponding files in src/');
   process.exit(1);
 }
 
@@ -35,10 +57,14 @@ try {
   }
   
   // Copy favicon for use as app icon
-  fs.copyFileSync(
-    path.join(__dirname, '../public/favicon.ico'), 
-    path.join(__dirname, '../build/resources/icon.ico')
-  );
+  if (fs.existsSync(path.join(__dirname, '../public/favicon.ico'))) {
+    fs.copyFileSync(
+      path.join(__dirname, '../public/favicon.ico'), 
+      path.join(__dirname, '../build/resources/icon.ico')
+    );
+  } else {
+    console.warn('Warning: favicon.ico not found, using default icon');
+  }
 } catch (error) {
   console.error('Error copying resources:', error);
 }
