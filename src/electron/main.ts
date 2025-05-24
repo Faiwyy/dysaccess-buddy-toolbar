@@ -5,6 +5,10 @@ import { exec } from 'child_process';
 import * as os from 'os';
 import * as fs from 'fs';
 
+// Get __dirname equivalent in ES modules
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Keep a global reference of the window object to prevent garbage collection
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
@@ -58,8 +62,8 @@ function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     },
     autoHideMenuBar: true,

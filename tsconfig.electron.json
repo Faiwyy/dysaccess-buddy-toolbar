@@ -1,17 +1,20 @@
 
 {
   "compilerOptions": {
-    "target": "ES2018",
-    "module": "CommonJS",
+    "target": "ES2022",
+    "module": "ES2022",
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
     "outDir": "electron",
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"]
     },
-    "typeRoots": ["./node_modules/@types"]
+    "typeRoots": ["./node_modules/@types"],
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src/electron/**/*"]
 }

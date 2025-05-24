@@ -23,12 +23,12 @@ function checkAliasResolution() {
   console.log('✓ Source files found');
 }
 
-// Compile TypeScript to JavaScript
-console.log('Compiling TypeScript...');
+// Compile TypeScript to JavaScript for Electron
+console.log('Compiling Electron TypeScript...');
 try {
   execSync('npx tsc -p tsconfig.electron.json', { stdio: 'inherit' });
 } catch (error) {
-  console.error('Error compiling TypeScript:', error);
+  console.error('Error compiling Electron TypeScript:', error);
   process.exit(1);
 }
 
@@ -42,7 +42,7 @@ try {
 } catch (error) {
   console.error('Error building app:', error);
   console.log('\nTroubleshooting: If you see alias resolution errors:');
-  console.log('1. Clear node_modules and reinstall: rm -rf node_modules package-lock.json && npm install');
+  console.log('1. Run: node scripts/clean-install.cjs');
   console.log('2. Clear Vite cache: npx vite --force');
   console.log('3. Check that all @/ imports have corresponding files in src/');
   process.exit(1);
