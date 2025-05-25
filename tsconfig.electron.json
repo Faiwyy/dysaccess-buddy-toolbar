@@ -16,8 +16,10 @@
     "typeRoots": ["./node_modules/@types"],
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "declaration": false,
+    "sourceMap": false
   },
   "include": ["src/electron/**/*"],
-  "exclude": ["node_modules", "dist", "build", "release"]
+  "exclude": ["node_modules", "dist", "build", "release", "src/!(electron)/**/*"]
 }
