@@ -12,9 +12,12 @@
     "paths": {
       "*": ["node_modules/*"]
     },
+    "types": ["electron", "node"],
     "typeRoots": ["./node_modules/@types"],
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
-  "include": ["src/electron/**/*"]
+  "include": ["src/electron/**/*"],
+  "exclude": ["node_modules", "dist", "build", "release"]
 }
