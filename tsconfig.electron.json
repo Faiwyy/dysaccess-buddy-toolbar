@@ -12,7 +12,6 @@
     "paths": {
       "*": ["node_modules/*"]
     },
-    "typeRoots": ["./node_modules/@types", "./node_modules"],
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
