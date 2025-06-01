@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
+  base: './', // Génère des chemins relatifs pour les assets
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

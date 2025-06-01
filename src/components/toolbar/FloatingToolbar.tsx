@@ -1,6 +1,7 @@
 
 import React from "react";
 import { useToolbar } from "@/contexts/ToolbarContext";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import BuddyMascot from "../BuddyMascot";
 import ToolbarButton from "./ToolbarButton";
 import AppList from "./AppList";
@@ -17,7 +18,9 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ onAddClick }) => {
     setIsDragging,
     showTip,
     toggleEditMode,
-    isEditing
+    toggleCollapse,
+    isEditing,
+    isCollapsed
   } = useToolbar();
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -28,42 +31,63 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ onAddClick }) => {
 
   return (
     <div 
-      className="float-toolbar toolbar-shadow rounded-2xl bg-white p-3 border border-gray-100 flex items-center"
+      className="float-toolbar toolbar-shadow rounded-2xl bg-white p-3 border border-gray-100 flex items-center transition-all duration-300"
       style={{ 
         position: "absolute",
         left: `${dragPosition.x}px`, 
         top: `${dragPosition.y}px`,
-        transition: isDragging ? 'none' : 'all 0.2s ease'
+        transition: isDragging ? 'none' : 'all 0.2s ease',
+        width: isCollapsed ? 'auto' : 'auto'
       }}
     >
-      {/* Buddy Mascot (always on the left) */}
+      {/* Collapse/Expand button */}
+      <div className="mr-2">
+        <button
+          onClick={toggleCollapse}
+          className="w-8 h-8 bg-dysaccess-blue hover:bg-blue-600 rounded-lg flex items-center justify-center transition-colors"
+          aria-label={isCollapsed ? "Étendre la barre" : "Rétracter la barre"}
+        >
+          {isCollapsed ? (
+            <ChevronRight className="h-4 w-4 text-white" />
+          ) : (
+            <ChevronLeft className="h-4 w-4 text-white" />
+          )}
+        </button>
+      </div>
+
+      {/* Buddy Mascot (always visible) */}
       <div className="mr-3 cursor-move" onMouseDown={handleMouseDown}>
-        <BuddyMascot showTip={showTip} />
+        <BuddyMascot showTip={showTip && !isCollapsed} />
       </div>
       
-      {/* App shortcuts with add button */}
-      <div className="flex space-x-3 items-center">
-        <AppList />
-        {isEditing && (
-          <ToolbarButton 
-            type="add" 
-            onClick={onAddClick}
-          />
-        )}
-      </div>
-      
-      {/* Voice dictation button */}
-      <div className="ml-3 mr-3">
-        <VoiceDictation />
-      </div>
-      
-      {/* Configuration button */}
-      <div>
-        <ToolbarButton
-          type="config"
-          onClick={toggleEditMode}
-        />
-      </div>
+      {/* Collapsible content */}
+      {!isCollapsed && (
+        <>
+          {/* App shortcuts with add button */}
+          <div className="flex space-x-3 items-center">
+            <AppList />
+            {isEditing && (
+              <ToolbarButton 
+                type="add" 
+                onClick={onAddClick}
+              />
+            )}
+          </div>
+          
+          {/* Voice dictation button */}
+          <div className="ml-3 mr-3">
+            <VoiceDictation />
+          </div>
+          
+          {/* Configuration button */}
+          <div>
+            <ToolbarButton
+              type="config"
+              onClick={toggleEditMode}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

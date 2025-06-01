@@ -1,3 +1,4 @@
+
 import { app, BrowserWindow, shell, ipcMain, dialog, Tray, Menu, nativeImage } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
@@ -57,6 +58,12 @@ const setAutoLaunch = (enabled: boolean): void => {
 };
 
 function createWindow() {
+  // Get icon path for window
+  const appIconPath = path.join(
+    process.env.NODE_ENV === 'development' ? __dirname : app.getAppPath(),
+    process.env.NODE_ENV === 'development' ? '../public/favicon.ico' : 'build/resources/icon.ico'
+  );
+
   // Create the browser window
   mainWindow = new BrowserWindow({
     width: 800,
@@ -67,7 +74,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     },
     autoHideMenuBar: true,
-    icon: path.join(__dirname, '../public/favicon.ico'),
+    icon: appIconPath,
     frame: false,
     transparent: true,
     alwaysOnTop: true, // Always show on top of other windows
@@ -81,17 +88,12 @@ function createWindow() {
   if (process.env.NODE_ENV === 'development') {
     // Load from dev server in development mode
     mainWindow.loadURL('http://localhost:8080');
-    // Open DevTools
     mainWindow.webContents.openDevTools();
   } else {
     // Load local file in production mode
-    mainWindow.loadURL(
-      url.format({
-        pathname: path.join(__dirname, '../dist/index.html'),
-        protocol: 'file:',
-        slashes: true,
-      })
-    );
+    const htmlPath = path.join(app.getAppPath(), 'dist', 'index.html');
+    mainWindow.loadFile(htmlPath);
+    // mainWindow.webContents.openDevTools(); // Optionnel pour débogage en production
   }
 
   // Handle external links (open in default browser)
@@ -116,8 +118,11 @@ function createWindow() {
 
 // Function to create tray icon
 function createTray() {
-  const iconPath = path.join(__dirname, '../public/favicon.ico');
-  const trayIcon = nativeImage.createFromPath(iconPath);
+  const trayIconPath = path.join(
+    process.env.NODE_ENV === 'development' ? __dirname : app.getAppPath(),
+    process.env.NODE_ENV === 'development' ? '../public/favicon.ico' : 'build/resources/icon.ico'
+  );
+  const trayIcon = nativeImage.createFromPath(trayIconPath);
   
   tray = new Tray(trayIcon.resize({ width: 16, height: 16 }));
   const contextMenu = Menu.buildFromTemplate([
@@ -169,19 +174,45 @@ function createTray() {
 
 // Function to open a local application
 function openLocalApplication(appPath: string) {
+  console.log('Attempting to open application at path:', appPath);
   const platform = os.platform();
 
   try {
     if (platform === 'win32') {
-      exec(`start ${appPath}`);
+      exec(`start "${appPath}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          dialog.showErrorBox('Erreur de lancement', `Échec du lancement : ${error.message}`);
+          return;
+        }
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+      });
     } else if (platform === 'darwin') {
-      exec(`open ${appPath}`);
+      exec(`open "${appPath}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          dialog.showErrorBox('Erreur de lancement', `Échec du lancement : ${error.message}`);
+          return;
+        }
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+      });
     } else if (platform === 'linux') {
-      exec(`xdg-open ${appPath}`);
+      exec(`xdg-open "${appPath}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          dialog.showErrorBox('Erreur de lancement', `Échec du lancement : ${error.message}`);
+          return;
+        }
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+      });
     } else {
       dialog.showErrorBox('Error', `Unsupported platform: ${platform}`);
     }
   } catch (error) {
+    console.error('Error in openLocalApplication:', error);
     dialog.showErrorBox('Error', `Failed to open application: ${error}`);
   }
 }
