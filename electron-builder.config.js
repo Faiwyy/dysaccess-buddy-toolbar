@@ -3,7 +3,7 @@
  * @type {import('electron-builder').Configuration}
  * @see https://www.electron.build/configuration/configuration
  */
-module.exports = {
+const config = {
   appId: "dev.dysaccess.buddy-toolbar",
   productName: "DysAccess Buddy",
   copyright: "Copyright © 2023",
@@ -37,7 +37,7 @@ module.exports = {
   },
   mac: {
     target: ["dmg"],
-    icon: "public/favicon.ico", 
+    icon: "build/resources/icon.ico", 
     artifactName: "${productName}-${version}-Installer.${ext}",
     category: "public.app-category.education",
     hardenedRuntime: true
@@ -45,7 +45,9 @@ module.exports = {
   linux: {
     target: ["AppImage", "deb", "rpm"],
     artifactName: "${productName}-${version}.${ext}",
-    icon: "public/favicon.ico",
+    icon: "build/resources/icon.ico",
     category: "Education"
   }
 };
+
+module.exports = config;

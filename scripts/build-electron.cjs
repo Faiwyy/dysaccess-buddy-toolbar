@@ -1,3 +1,4 @@
+
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -21,12 +22,21 @@ function checkAliasResolution() {
   console.log('✓ Source files found');
 }
 
-// Compile TypeScript to JavaScript for Electron
-console.log('Compiling Electron TypeScript...');
+// Compile TypeScript to JavaScript for Electron main process
+console.log('Compiling Electron main process TypeScript...');
 try {
   execSync('npx tsc -p tsconfig.electron.json', { stdio: 'inherit' });
 } catch (error) {
-  console.error('Error compiling Electron TypeScript:', error);
+  console.error('Error compiling Electron main process TypeScript:', error);
+  process.exit(1);
+}
+
+// Compile TypeScript to JavaScript for Electron preload script
+console.log('Compiling Electron preload TypeScript...');
+try {
+  execSync('npx tsc -p src/electron/tsconfig.preload.json', { stdio: 'inherit' });
+} catch (error) {
+  console.error('Error compiling Electron preload TypeScript:', error);
   process.exit(1);
 }
 
