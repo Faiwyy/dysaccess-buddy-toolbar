@@ -1,5 +1,5 @@
 
-import { app, BrowserWindow, shell, ipcMain, dialog, Tray, Menu, nativeImage } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog, Tray, Menu, nativeImage, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import { exec } from 'child_process';
@@ -64,14 +64,26 @@ function createWindow() {
     process.env.NODE_ENV === 'development' ? '../public/lovable-uploads/63ea3245-8d78-4d36-88ee-8f100c443668.png' : 'build/resources/icon.png'
   );
 
+  // Calculate center position
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width: displayWidth, height: displayHeight } = primaryDisplay.workAreaSize;
+  const windowWidth = 1200; // Desired toolbar width
+  const windowHeight = 100; // Desired toolbar height
+
+  const x = Math.round((displayWidth - windowWidth) / 2);
+  const y = Math.round((displayHeight - windowHeight) / 2);
+
   // Create the browser window
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 100,
+    x, // Calculated X position
+    y, // Calculated Y position
+    width: windowWidth,
+    height: windowHeight,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      webSecurity: true // Ensure web security is enabled
     },
     icon: appIconPath,
     transparent: true,    // Rendre le fond de la fenêtre transparent
@@ -82,7 +94,7 @@ function createWindow() {
     resizable: false     // Empêcher le redimensionnement
   });
 
-  // Set the window to be always on top
+  // Set the window to be always on top with highest level
   mainWindow.setAlwaysOnTop(true, 'floating');
   
   // Load the app
@@ -99,6 +111,8 @@ function createWindow() {
   // Show window once ready to avoid white flash
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show();
+    // Ensure it stays on top after showing
+    mainWindow?.setAlwaysOnTop(true, 'floating');
   });
 
   // Handle external links (open in default browser)
@@ -115,6 +129,13 @@ function createWindow() {
       return false;
     }
     return true;
+  });
+  
+  // Ensure the window stays on top when focus changes
+  mainWindow.on('blur', () => {
+    if (mainWindow) {
+      mainWindow.setAlwaysOnTop(true, 'floating');
+    }
   });
   
   // Create tray icon

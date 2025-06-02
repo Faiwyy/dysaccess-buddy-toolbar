@@ -16,7 +16,6 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ onAddClick }) => {
     dragPosition, 
     isDragging, 
     setIsDragging,
-    showTip,
     toggleEditMode,
     toggleCollapse,
     isEditing,
@@ -44,7 +43,7 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ onAddClick }) => {
     >
       {/* Buddy Mascot (always visible and draggable) */}
       <div className="mr-3 cursor-move" onMouseDown={handleMouseDown} style={{ WebkitAppRegion: 'drag' } as any}>
-        <BuddyMascot showTip={showTip && !isCollapsed} />
+        <BuddyMascot />
       </div>
       
       {/* Collapsible content */}

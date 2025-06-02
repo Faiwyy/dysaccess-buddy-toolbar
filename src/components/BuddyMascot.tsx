@@ -1,22 +1,13 @@
 
-import React, { useState } from "react";
-import { Lightbulb, Smile, GripHorizontal } from "lucide-react";
+import React from "react";
+import { Smile, GripHorizontal } from "lucide-react";
 
 interface BuddyMascotProps {
   showTip?: boolean;
   tipText?: string;
 }
 
-const BuddyMascot: React.FC<BuddyMascotProps> = ({ 
-  showTip = true, 
-  tipText = "Clique et fais glisser Buddy pour déplacer la barre d'outils" 
-}) => {
-  const [isVisible, setIsVisible] = useState(showTip);
-
-  const handleTipClick = () => {
-    setIsVisible(false);
-  };
-
+const BuddyMascot: React.FC<BuddyMascotProps> = () => {
   return (
     <div className="relative flex items-center">
       {/* Icône de déplacement */}
@@ -38,20 +29,6 @@ const BuddyMascot: React.FC<BuddyMascotProps> = ({
           <div className="w-1 h-5 bg-dysaccess-purple rounded-full"></div>
         </div>
       </div>
-      
-      {/* Bulle d'info (positionnée au-dessus de Buddy au lieu de sur le côté) */}
-      {isVisible && (
-        <div 
-          onClick={handleTipClick}
-          className="absolute -top-24 left-1/2 transform -translate-x-1/2 bg-white p-3 rounded-xl shadow-md w-44 dyslexic-friendly text-sm text-dysaccess-text cursor-pointer"
-        >
-          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45"></div>
-          <div className="flex items-start">
-            <Lightbulb className="h-4 w-4 text-dysaccess-purple mr-2 mt-0.5 flex-shrink-0" />
-            <p>{tipText}</p>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

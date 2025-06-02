@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from './use-toast';
 
@@ -17,9 +16,12 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
   
   // Utiliser useRef pour stocker l'instance de reconnaissance vocale
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const isInitialized = useRef(false);
   
   // Initialiser la reconnaissance vocale une seule fois
   useEffect(() => {
+    if (isInitialized.current) return;
+    
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
@@ -35,6 +37,9 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
     recognitionInstance.lang = 'fr-FR'; // Langue française
     recognitionInstance.continuous = true;
     recognitionInstance.interimResults = true;
+    
+    // Add additional configuration for better reliability
+    recognitionInstance.maxAlternatives = 1;
     
     recognitionInstance.onstart = () => {
       setIsListening(true);
@@ -81,10 +86,14 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
       if (event.error === 'not-allowed' || event.error === 'audio-capture') {
         errorMessage = "Accès au microphone refusé. Veuillez autoriser l'accès dans les paramètres de votre navigateur.";
       } else if (event.error === 'network') {
-        errorMessage = "Problème de connexion réseau";
+        errorMessage = "Problème de connexion. Vérifiez votre connexion internet et réessayez.";
       } else if (event.error === 'aborted') {
         // Ne pas afficher de toast si l'utilisateur a simplement arrêté la reconnaissance
         return;
+      } else if (event.error === 'no-speech') {
+        errorMessage = "Aucune parole détectée. Parlez plus fort ou vérifiez votre microphone.";
+      } else if (event.error === 'service-not-allowed') {
+        errorMessage = "Service de reconnaissance vocale non autorisé. Vérifiez les paramètres de votre navigateur.";
       }
       
       toast({
@@ -95,6 +104,7 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
     };
     
     recognitionRef.current = recognitionInstance;
+    isInitialized.current = true;
     
     // Nettoyer à la sortie
     return () => {
@@ -181,7 +191,7 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
         setIsListening(false);
         toast({
           title: "Erreur de démarrage",
-          description: "Impossible de démarrer la reconnaissance vocale",
+          description: "Impossible de démarrer la reconnaissance vocale. Vérifiez votre microphone et votre connexion.",
           variant: "destructive"
         });
       }
