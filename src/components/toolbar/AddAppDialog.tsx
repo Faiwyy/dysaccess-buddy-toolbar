@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useToolbar } from "@/contexts/ToolbarContext";
 import { iconRegistry } from "@/lib/iconRegistry";
@@ -78,7 +77,7 @@ const AddAppDialog: React.FC<AddAppDialogProps> = ({ isOpen, onOpenChange }) => 
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="dialog-content sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="dyslexic-friendly">Ajouter un raccourci</DialogTitle>
           <DialogDescription className="dyslexic-friendly">
