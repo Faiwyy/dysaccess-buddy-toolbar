@@ -14,7 +14,7 @@ const config = {
   },
   files: [
     "dist/**/*",
-    "electron/**/*"
+    "dist-electron/**/*"
   ],
   win: {
     target: [
@@ -23,7 +23,7 @@ const config = {
         arch: ["x64"]
       }
     ],
-    icon: "build/resources/icon.ico",
+    icon: "build/resources/icon.png",
     artifactName: "${productName}-${version}-Setup.${ext}"
   },
   nsis: {
@@ -37,7 +37,7 @@ const config = {
   },
   mac: {
     target: ["dmg"],
-    icon: "build/resources/icon.ico", 
+    icon: "build/resources/icon.png", 
     artifactName: "${productName}-${version}-Installer.${ext}",
     category: "public.app-category.education",
     hardenedRuntime: true
@@ -45,7 +45,7 @@ const config = {
   linux: {
     target: ["AppImage", "deb", "rpm"],
     artifactName: "${productName}-${version}.${ext}",
-    icon: "build/resources/icon.ico",
+    icon: "build/resources/icon.png",
     category: "Education"
   }
 };

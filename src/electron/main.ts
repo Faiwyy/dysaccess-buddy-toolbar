@@ -1,4 +1,3 @@
-
 import { app, BrowserWindow, shell, ipcMain, dialog, Tray, Menu, nativeImage } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
@@ -61,7 +60,7 @@ function createWindow() {
   // Get icon path for window
   const appIconPath = path.join(
     process.env.NODE_ENV === 'development' ? __dirname : app.getAppPath(),
-    process.env.NODE_ENV === 'development' ? '../public/favicon.ico' : 'build/resources/icon.ico'
+    process.env.NODE_ENV === 'development' ? '../public/lovable-uploads/63ea3245-8d78-4d36-88ee-8f100c443668.png' : 'build/resources/icon.png'
   );
 
   // Create the browser window
@@ -120,7 +119,7 @@ function createWindow() {
 function createTray() {
   const trayIconPath = path.join(
     process.env.NODE_ENV === 'development' ? __dirname : app.getAppPath(),
-    process.env.NODE_ENV === 'development' ? '../public/favicon.ico' : 'build/resources/icon.ico'
+    process.env.NODE_ENV === 'development' ? '../public/lovable-uploads/63ea3245-8d78-4d36-88ee-8f100c443668.png' : 'build/resources/icon.png'
   );
   const trayIcon = nativeImage.createFromPath(trayIconPath);
   

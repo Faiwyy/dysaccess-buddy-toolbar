@@ -4,8 +4,8 @@ const fs = require('fs');
 const path = require('path');
 
 // Create directories if they don't exist
-if (!fs.existsSync(path.join(__dirname, '../electron'))) {
-  fs.mkdirSync(path.join(__dirname, '../electron'));
+if (!fs.existsSync(path.join(__dirname, '../dist-electron'))) {
+  fs.mkdirSync(path.join(__dirname, '../dist-electron'));
 }
 
 // Function to check if alias resolution is working
@@ -64,14 +64,20 @@ try {
     fs.mkdirSync(path.join(__dirname, '../build/resources'), { recursive: true });
   }
   
-  // Copy favicon for use as app icon
-  if (fs.existsSync(path.join(__dirname, '../public/favicon.ico'))) {
+  // Copy the new uploaded icon for use as app icon
+  if (fs.existsSync(path.join(__dirname, '../public/lovable-uploads/63ea3245-8d78-4d36-88ee-8f100c443668.png'))) {
+    fs.copyFileSync(
+      path.join(__dirname, '../public/lovable-uploads/63ea3245-8d78-4d36-88ee-8f100c443668.png'), 
+      path.join(__dirname, '../build/resources/icon.png')
+    );
+  } else if (fs.existsSync(path.join(__dirname, '../public/favicon.ico'))) {
+    // Fallback to favicon if new icon not found
     fs.copyFileSync(
       path.join(__dirname, '../public/favicon.ico'), 
       path.join(__dirname, '../build/resources/icon.ico')
     );
   } else {
-    console.warn('Warning: favicon.ico not found, using default icon');
+    console.warn('Warning: No icon found, using default icon');
   }
 } catch (error) {
   console.error('Error copying resources:', error);

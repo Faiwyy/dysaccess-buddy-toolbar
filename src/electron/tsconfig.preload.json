@@ -3,7 +3,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "module": "CommonJS",
-    "outDir": "../../electron",
+    "outDir": "../../dist-electron",
     "noEmit": false
   },
   "include": ["preload.ts"]
