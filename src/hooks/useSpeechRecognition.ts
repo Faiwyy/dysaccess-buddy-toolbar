@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from './use-toast';
 
@@ -14,17 +15,17 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
   const [transcript, setTranscript] = useState('');
   const { toast } = useToast();
   
-  // Utiliser useRef pour stocker l'instance de reconnaissance vocale
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const isInitialized = useRef(false);
   
-  // Initialiser la reconnaissance vocale une seule fois
+  // Initialize speech recognition once
   useEffect(() => {
     if (isInitialized.current) return;
     
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
+      console.error('Speech recognition not supported');
       toast({
         title: "Dictée vocale non disponible",
         description: "Votre navigateur ne supporte pas la reconnaissance vocale",
@@ -32,13 +33,22 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
       });
       return;
     }
+
+    // Check network connectivity
+    if (!navigator.onLine) {
+      console.error('No network connection for speech recognition');
+      toast({
+        title: "Connexion réseau requise",
+        description: "La reconnaissance vocale nécessite une connexion internet",
+        variant: "destructive"
+      });
+      return;
+    }
     
     const recognitionInstance = new SpeechRecognition();
-    recognitionInstance.lang = 'fr-FR'; // Langue française
+    recognitionInstance.lang = 'fr-FR';
     recognitionInstance.continuous = true;
     recognitionInstance.interimResults = true;
-    
-    // Add additional configuration for better reliability
     recognitionInstance.maxAlternatives = 1;
     
     recognitionInstance.onstart = () => {
@@ -60,12 +70,9 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
         setTranscript(prev => prev + text + ' ');
         console.log("Texte reconnu:", text);
         
-        // Insérer le texte dans l'élément actif, même hors de l'application
         if (window.electronAPI) {
-          // Utiliser l'API Electron pour insérer le texte dans l'application active
           insertTextIntoActiveElement(text);
         } else {
-          // Fallback pour le mode navigateur
           const activeElement = document.activeElement as HTMLInputElement | HTMLTextAreaElement;
           if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
             insertTextIntoInputElement(activeElement, text);
@@ -75,25 +82,36 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
     };
     
     recognitionInstance.onerror = (event) => {
-      console.error('Speech recognition error', event.error);
-      
-      // Réinitialiser l'état si une erreur survient
+      console.error('Speech recognition error:', event.error);
       setIsListening(false);
       
-      // Message d'erreur personnalisé en fonction du type d'erreur
       let errorMessage = "Une erreur s'est produite";
       
-      if (event.error === 'not-allowed' || event.error === 'audio-capture') {
-        errorMessage = "Accès au microphone refusé. Veuillez autoriser l'accès dans les paramètres de votre navigateur.";
-      } else if (event.error === 'network') {
-        errorMessage = "Problème de connexion. Vérifiez votre connexion internet et réessayez.";
-      } else if (event.error === 'aborted') {
-        // Ne pas afficher de toast si l'utilisateur a simplement arrêté la reconnaissance
-        return;
-      } else if (event.error === 'no-speech') {
-        errorMessage = "Aucune parole détectée. Parlez plus fort ou vérifiez votre microphone.";
-      } else if (event.error === 'service-not-allowed') {
-        errorMessage = "Service de reconnaissance vocale non autorisé. Vérifiez les paramètres de votre navigateur.";
+      switch (event.error) {
+        case 'not-allowed':
+        case 'audio-capture':
+          errorMessage = "Accès au microphone refusé. Veuillez autoriser l'accès dans les paramètres.";
+          break;
+        case 'network':
+          errorMessage = "Problème de connexion. Vérifiez votre connexion internet.";
+          // Try to restart if it's a temporary network issue
+          setTimeout(() => {
+            if (navigator.onLine && recognitionRef.current) {
+              console.log("Tentative de redémarrage après erreur réseau");
+              startListening();
+            }
+          }, 2000);
+          break;
+        case 'aborted':
+          return; // Don't show toast for user-initiated stops
+        case 'no-speech':
+          errorMessage = "Aucune parole détectée. Parlez plus fort ou vérifiez votre microphone.";
+          break;
+        case 'service-not-allowed':
+          errorMessage = "Service de reconnaissance vocale non autorisé.";
+          break;
+        default:
+          errorMessage = `Erreur de reconnaissance vocale: ${event.error}`;
       }
       
       toast({
@@ -106,7 +124,6 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
     recognitionRef.current = recognitionInstance;
     isInitialized.current = true;
     
-    // Nettoyer à la sortie
     return () => {
       if (isListening && recognitionRef.current) {
         recognitionRef.current.stop();
@@ -114,7 +131,6 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
     };
   }, [toast]);
   
-  // Fonction pour insérer du texte dans un élément input ou textarea
   const insertTextIntoInputElement = (element: HTMLInputElement | HTMLTextAreaElement, text: string) => {
     try {
       const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
@@ -128,7 +144,6 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
         const lastValue = element.value;
         nativeInputValueSetter.call(element, lastValue + text + ' ');
         
-        // Déclencher un événement input pour mettre à jour l'interface utilisateur
         const event = new Event('input', { bubbles: true });
         element.dispatchEvent(event);
       }
@@ -137,22 +152,14 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
     }
   };
 
-  // Fonction pour insérer du texte dans l'application active en mode Electron
   const insertTextIntoActiveElement = (text: string) => {
-    // Dans un contexte Electron, on peut utiliser un IPC pour communiquer avec le processus principal
-    // qui se chargera d'injecter le texte dans l'application active (niveau OS)
     if (window.electronAPI) {
-      // Simuler l'insertion de texte via les événements clavier ou le presse-papier
-      // Dans un cas réel, une fonction spécifique serait implémentée dans le main process d'Electron
       console.log("Inserting text via Electron:", text);
       
       try {
-        // Copier le texte dans le presse-papier
         navigator.clipboard.writeText(text + ' ')
           .then(() => {
-            // Simuler le raccourci Ctrl+V (ou Cmd+V) pour coller le texte
             console.log("Text copied to clipboard, ready for paste operation");
-            // Le processus principal d'Electron pourrait ensuite simuler la combinaison de touches Ctrl+V
           })
           .catch(err => {
             console.error('Failed to copy text to clipboard:', err);
@@ -163,7 +170,6 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
     }
   };
   
-  // Écouter les événements de l'API Electron
   useEffect(() => {
     const handleToggle = () => {
       if (isListening) {
@@ -181,17 +187,25 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
   }, [isListening]);
   
   const startListening = useCallback(() => {
+    if (!navigator.onLine) {
+      toast({
+        title: "Connexion requise",
+        description: "La reconnaissance vocale nécessite une connexion internet",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (recognitionRef.current && !isListening) {
       try {
         recognitionRef.current.start();
         console.log("Démarrage de la reconnaissance vocale");
       } catch (e) {
         console.error("Error starting speech recognition:", e);
-        // Si une erreur se produit lors du démarrage, réinitialiser l'état
         setIsListening(false);
         toast({
           title: "Erreur de démarrage",
-          description: "Impossible de démarrer la reconnaissance vocale. Vérifiez votre microphone et votre connexion.",
+          description: "Impossible de démarrer la reconnaissance vocale. Vérifiez votre microphone.",
           variant: "destructive"
         });
       }

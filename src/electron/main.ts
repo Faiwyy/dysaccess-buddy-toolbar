@@ -1,4 +1,3 @@
-
 import { app, BrowserWindow, shell, ipcMain, dialog, Tray, Menu, nativeImage, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
@@ -12,6 +11,7 @@ const __dirname = path.dirname(__filename);
 
 // Keep a global reference of the window object to prevent garbage collection
 let mainWindow: BrowserWindow | null = null;
+let addShortcutWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
 let isQuiting = false;
 
@@ -67,31 +67,32 @@ function createWindow() {
   // Calculate center position
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: displayWidth, height: displayHeight } = primaryDisplay.workAreaSize;
-  const windowWidth = 1200; // Desired toolbar width
-  const windowHeight = 100; // Desired toolbar height
+  const windowWidth = 1200;
+  const windowHeight = 100;
 
   const x = Math.round((displayWidth - windowWidth) / 2);
   const y = Math.round((displayHeight - windowHeight) / 2);
 
   // Create the browser window
   mainWindow = new BrowserWindow({
-    x, // Calculated X position
-    y, // Calculated Y position
+    x,
+    y,
     width: windowWidth,
     height: windowHeight,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
-      webSecurity: true // Ensure web security is enabled
+      webSecurity: false, // Permet l'accès aux API web comme Speech Recognition
+      allowRunningInsecureContent: true // Aide avec les API web
     },
     icon: appIconPath,
-    transparent: true,    // Rendre le fond de la fenêtre transparent
-    frame: false,        // Supprimer le cadre de la fenêtre native
-    alwaysOnTop: true,   // Toujours au-dessus des autres fenêtres
-    skipTaskbar: true,   // Ne pas apparaître dans la barre des tâches
-    show: false,         // Cacher au démarrage pour éviter un flash blanc
-    resizable: false     // Empêcher le redimensionnement
+    transparent: true,
+    frame: false,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    show: false,
+    resizable: false
   });
 
   // Set the window to be always on top with highest level
@@ -99,11 +100,9 @@ function createWindow() {
   
   // Load the app
   if (process.env.NODE_ENV === 'development') {
-    // Load from dev server in development mode
     mainWindow.loadURL('http://localhost:8080');
     mainWindow.webContents.openDevTools();
   } else {
-    // Load local file in production mode
     const htmlPath = path.join(app.getAppPath(), 'dist', 'index.html');
     mainWindow.loadFile(htmlPath);
   }
@@ -111,7 +110,6 @@ function createWindow() {
   // Show window once ready to avoid white flash
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show();
-    // Ensure it stays on top after showing
     mainWindow?.setAlwaysOnTop(true, 'floating');
   });
 
@@ -140,6 +138,56 @@ function createWindow() {
   
   // Create tray icon
   createTray();
+}
+
+// Function to create add shortcut window
+function createAddShortcutWindow() {
+  if (addShortcutWindow) {
+    addShortcutWindow.focus();
+    return;
+  }
+
+  const appIconPath = path.join(
+    process.env.NODE_ENV === 'development' ? __dirname : app.getAppPath(),
+    process.env.NODE_ENV === 'development' ? '../public/lovable-uploads/63ea3245-8d78-4d36-88ee-8f100c443668.png' : 'build/resources/icon.png'
+  );
+
+  addShortcutWindow = new BrowserWindow({
+    width: 600,
+    height: 800,
+    minWidth: 500,
+    minHeight: 700,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
+      webSecurity: true
+    },
+    parent: mainWindow,
+    modal: true,
+    show: false,
+    frame: true,
+    transparent: false,
+    resizable: false,
+    icon: appIconPath,
+    title: 'Ajouter un raccourci - DysAccess Buddy'
+  });
+
+  // Load the add shortcut page
+  if (process.env.NODE_ENV === 'development') {
+    addShortcutWindow.loadURL('http://localhost:8080/#/add-shortcut');
+  } else {
+    const htmlPath = path.join(app.getAppPath(), 'dist', 'index.html');
+    addShortcutWindow.loadFile(htmlPath, { hash: 'add-shortcut' });
+  }
+
+  addShortcutWindow.once('ready-to-show', () => {
+    addShortcutWindow?.show();
+  });
+
+  addShortcutWindow.on('closed', () => {
+    addShortcutWindow = null;
+  });
 }
 
 // Function to create tray icon
@@ -254,10 +302,38 @@ function registerIpcHandlers() {
   });
   
   ipcMain.handle('toggle-speech-recognition', async () => {
-    // This is handled by the renderer process since speech recognition
-    // is implemented with the Web Speech API
     if (mainWindow) {
       mainWindow.webContents.send('toggle-speech-recognition');
+    }
+    return true;
+  });
+
+  // New handler for opening add shortcut window
+  ipcMain.handle('open-add-shortcut-window', async () => {
+    createAddShortcutWindow();
+    return true;
+  });
+
+  // Handler for closing add shortcut window
+  ipcMain.handle('close-add-shortcut-window', async () => {
+    if (addShortcutWindow) {
+      addShortcutWindow.close();
+    }
+    return true;
+  });
+
+  // Handler for getting apps from main window
+  ipcMain.handle('get-apps', async () => {
+    if (mainWindow) {
+      return await mainWindow.webContents.executeJavaScript('window.getApps && window.getApps()');
+    }
+    return [];
+  });
+
+  // Handler for adding app to main window
+  ipcMain.handle('add-app', async (_event, app) => {
+    if (mainWindow) {
+      mainWindow.webContents.send('add-app', app);
     }
     return true;
   });
