@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -97,9 +98,13 @@
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground;
+  body, html, #root {
+    background-color: transparent !important;
     font-family: 'Quicksand', sans-serif;
+  }
+
+  body {
+    @apply text-foreground;
   }
 
   .dyslexic-friendly {
@@ -132,5 +137,16 @@
   .float-toolbar {
     position: fixed;
     z-index: 50;
+    -webkit-app-region: drag; /* Permet de glisser la fenêtre */
+    background-color: transparent;
+  }
+
+  /* Éléments interactifs dans la barre d'outils - ne doivent pas glisser la fenêtre */
+  .float-toolbar button,
+  .float-toolbar input,
+  .float-toolbar a,
+  .float-toolbar select,
+  .float-toolbar [role="button"] {
+    -webkit-app-region: no-drag;
   }
 }

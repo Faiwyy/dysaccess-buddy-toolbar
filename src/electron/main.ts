@@ -1,3 +1,4 @@
+
 import { app, BrowserWindow, shell, ipcMain, dialog, Tray, Menu, nativeImage } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
@@ -65,19 +66,20 @@ function createWindow() {
 
   // Create the browser window
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 100,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     },
-    autoHideMenuBar: true,
     icon: appIconPath,
-    frame: false,
-    transparent: true,
-    alwaysOnTop: true, // Always show on top of other windows
-    skipTaskbar: true  // Hide from taskbar
+    transparent: true,    // Rendre le fond de la fenêtre transparent
+    frame: false,        // Supprimer le cadre de la fenêtre native
+    alwaysOnTop: true,   // Toujours au-dessus des autres fenêtres
+    skipTaskbar: true,   // Ne pas apparaître dans la barre des tâches
+    show: false,         // Cacher au démarrage pour éviter un flash blanc
+    resizable: false     // Empêcher le redimensionnement
   });
 
   // Set the window to be always on top
@@ -92,8 +94,12 @@ function createWindow() {
     // Load local file in production mode
     const htmlPath = path.join(app.getAppPath(), 'dist', 'index.html');
     mainWindow.loadFile(htmlPath);
-    // mainWindow.webContents.openDevTools(); // Optionnel pour débogage en production
   }
+
+  // Show window once ready to avoid white flash
+  mainWindow.once('ready-to-show', () => {
+    mainWindow?.show();
+  });
 
   // Handle external links (open in default browser)
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {

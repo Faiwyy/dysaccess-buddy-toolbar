@@ -31,18 +31,19 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ onAddClick }) => {
 
   return (
     <div 
-      className="float-toolbar rounded-2xl p-3 flex items-center transition-all duration-300"
+      className="float-toolbar rounded-2xl p-3 flex items-center transition-all duration-300 toolbar-shadow"
       style={{ 
         position: "absolute",
         left: `${dragPosition.x}px`, 
         top: `${dragPosition.y}px`,
         transition: isDragging ? 'none' : 'all 0.2s ease',
         width: isCollapsed ? 'auto' : 'auto',
-        background: 'transparent'
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(10px)'
       }}
     >
-      {/* Buddy Mascot (always visible) */}
-      <div className="mr-3 cursor-move" onMouseDown={handleMouseDown}>
+      {/* Buddy Mascot (always visible and draggable) */}
+      <div className="mr-3 cursor-move" onMouseDown={handleMouseDown} style={{ WebkitAppRegion: 'drag' } as any}>
         <BuddyMascot showTip={showTip && !isCollapsed} />
       </div>
       
