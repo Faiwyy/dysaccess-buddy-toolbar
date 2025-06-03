@@ -39,6 +39,7 @@ interface ToolbarContextType {
   setIsDragging: React.Dispatch<React.SetStateAction<boolean>>;
   openApp: (app: AppShortcutData) => void;
   removeApp: (id: string) => void;
+  editApp: (app: AppShortcutData) => void;
   toggleEditMode: () => void;
   toggleCollapse: () => void;
 }
@@ -125,6 +126,19 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setApps(apps.filter(app => app.id !== id));
   };
 
+  // Edit an application
+  const editApp = (app: AppShortcutData) => {
+    if (isElectron() && window.electronAPI) {
+      window.electronAPI.openAddShortcutWindow(app);
+    } else {
+      console.log('Edit app:', app);
+      toast({
+        title: `Modification de ${app.name}`,
+        description: "Cette action ouvrirait l'éditeur d'application en version desktop.",
+      });
+    }
+  };
+
   // Toggle edit mode
   const toggleEditMode = () => {
     setIsEditing(!isEditing);
@@ -154,6 +168,7 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setIsDragging,
         openApp,
         removeApp,
+        editApp,
         toggleEditMode,
         toggleCollapse
       }}
