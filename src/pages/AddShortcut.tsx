@@ -37,15 +37,30 @@ const AddShortcut: React.FC = () => {
     const urlParams = new URLSearchParams(window.location.hash.split('?')[1]);
     const editData = urlParams.get('edit');
     
+    console.log('URL params:', window.location.hash);
+    console.log('Edit data:', editData);
+    
     if (editData) {
       try {
         const appData = JSON.parse(decodeURIComponent(editData));
+        console.log('Parsed app data for editing:', appData);
+        
         setEditingApp(appData);
         setIsEditing(true);
         setNewAppName(appData.name);
         setAppType(appData.type);
-        setSelectedIcon(Object.keys(iconRegistry).find(key => iconRegistry[key] === appData.icon) || "FileText");
-        setSelectedColor(Object.keys(colorRegistry).find(key => colorRegistry[key] === appData.color) || "Bleu");
+        
+        // Find the icon name from the registry
+        const iconName = Object.keys(iconRegistry).find(key => 
+          iconRegistry[key] === appData.icon
+        ) || "FileText";
+        setSelectedIcon(iconName);
+        
+        // Find the color name from the registry
+        const colorName = Object.keys(colorRegistry).find(key => 
+          colorRegistry[key] === appData.color
+        ) || "Bleu";
+        setSelectedColor(colorName);
         
         if (appData.type === "web") {
           setWebUrl(appData.url || "");
@@ -54,9 +69,14 @@ const AddShortcut: React.FC = () => {
         }
       } catch (error) {
         console.error("Error parsing edit data:", error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les données de l'application à modifier.",
+          variant: "destructive"
+        });
       }
     }
-  }, []);
+  }, [toast]);
 
   const saveApp = async () => {
     if (newAppName.trim() === "") {
@@ -95,24 +115,35 @@ const AddShortcut: React.FC = () => {
       ...(appType === "web" ? { url: webUrl } : { localPath: localPath })
     };
 
+    console.log('Saving app:', appData, 'Is editing:', isEditing);
+
     // Send the app data to the main window via IPC
     if (window.electronAPI) {
-      if (isEditing) {
-        await window.electronAPI.updateApp(appData);
+      try {
+        if (isEditing) {
+          await window.electronAPI.updateApp(appData);
+          toast({
+            title: "Application modifiée",
+            description: `${newAppName} a été modifié avec succès.`
+          });
+        } else {
+          await window.electronAPI.addApp(appData);
+          toast({
+            title: "Application ajoutée",
+            description: `${newAppName} a été ajouté à la barre d'outils.`
+          });
+        }
+        
+        // Close this window
+        await window.electronAPI.closeAddShortcutWindow();
+      } catch (error) {
+        console.error('Error saving app:', error);
         toast({
-          title: "Application modifiée",
-          description: `${newAppName} a été modifié avec succès.`
-        });
-      } else {
-        await window.electronAPI.addApp(appData);
-        toast({
-          title: "Application ajoutée",
-          description: `${newAppName} a été ajouté à la barre d'outils.`
+          title: "Erreur",
+          description: "Une erreur s'est produite lors de la sauvegarde.",
+          variant: "destructive"
         });
       }
-      
-      // Close this window
-      await window.electronAPI.closeAddShortcutWindow();
     }
   };
 
@@ -136,7 +167,7 @@ const AddShortcut: React.FC = () => {
           </CardHeader>
           
           <CardContent className="space-y-6">
-            <Tabs defaultValue={appType} onValueChange={(value) => setAppType(value as "app" | "web")}>
+            <Tabs value={appType} onValueChange={(value) => setAppType(value as "app" | "web")}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="app" className="dyslexic-friendly">Application</TabsTrigger>
                 <TabsTrigger value="web" className="dyslexic-friendly">Site Web</TabsTrigger>

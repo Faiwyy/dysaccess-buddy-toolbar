@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { LucideIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -65,6 +64,41 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return window.navigator.userAgent.indexOf('Electron') !== -1;
   };
 
+  // Add event listeners for IPC communication
+  useEffect(() => {
+    const handleAddApp = (event: CustomEvent) => {
+      const newApp = event.detail;
+      console.log('Adding new app:', newApp);
+      setApps(prevApps => [...prevApps, newApp]);
+      toast({
+        title: `${newApp.name} ajouté`,
+        description: "L'application a été ajoutée à la barre d'outils.",
+      });
+    };
+
+    const handleUpdateApp = (event: CustomEvent) => {
+      const updatedApp = event.detail;
+      console.log('Updating app:', updatedApp);
+      setApps(prevApps => 
+        prevApps.map(app => 
+          app.id === updatedApp.id ? updatedApp : app
+        )
+      );
+      toast({
+        title: `${updatedApp.name} modifié`,
+        description: "L'application a été mise à jour.",
+      });
+    };
+
+    document.addEventListener('add-app', handleAddApp as EventListener);
+    document.addEventListener('update-app', handleUpdateApp as EventListener);
+
+    return () => {
+      document.removeEventListener('add-app', handleAddApp as EventListener);
+      document.removeEventListener('update-app', handleUpdateApp as EventListener);
+    };
+  }, [toast]);
+
   // Handle mouse movement for dragging
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -124,10 +158,15 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Remove an application
   const removeApp = (id: string) => {
     setApps(apps.filter(app => app.id !== id));
+    toast({
+      title: "Application supprimée",
+      description: "L'application a été retirée de la barre d'outils.",
+    });
   };
 
   // Edit an application
   const editApp = (app: AppShortcutData) => {
+    console.log('Editing app:', app);
     if (isElectron() && window.electronAPI) {
       window.electronAPI.openAddShortcutWindow(app);
     } else {
