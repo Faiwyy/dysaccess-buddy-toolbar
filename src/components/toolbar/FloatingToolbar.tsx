@@ -5,7 +5,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import BuddyMascot from "../BuddyMascot";
 import ToolbarButton from "./ToolbarButton";
 import AppList from "./AppList";
-import VoiceDictation from "./VoiceDictation";
 
 interface FloatingToolbarProps {
   onAddClick: () => void;
@@ -60,13 +59,8 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ onAddClick }) => {
             )}
           </div>
           
-          {/* Voice dictation button */}
-          <div className="ml-3 mr-3">
-            <VoiceDictation />
-          </div>
-          
           {/* Configuration button */}
-          <div className="mr-2">
+          <div className="ml-3 mr-2">
             <ToolbarButton
               type="config"
               onClick={toggleEditMode}

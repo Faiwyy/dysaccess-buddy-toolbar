@@ -1,10 +1,10 @@
 
 import React from "react";
-import { X, Plus, Settings, Save } from "lucide-react";
+import { X, Plus, Settings, Save, Edit } from "lucide-react";
 import { useToolbar } from "@/contexts/ToolbarContext";
 
 interface ToolbarButtonProps {
-  type: "add" | "config" | "delete";
+  type: "add" | "config" | "delete" | "edit";
   onClick: () => void;
   appId?: string;
   appName?: string;
@@ -13,7 +13,7 @@ interface ToolbarButtonProps {
 const ToolbarButton: React.FC<ToolbarButtonProps> = ({ type, onClick, appId, appName }) => {
   const { isEditing } = useToolbar();
 
-  if (type === "delete" && !isEditing) return null;
+  if ((type === "delete" || type === "edit") && !isEditing) return null;
 
   return (
     <>
@@ -34,6 +34,16 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({ type, onClick, appId, app
           aria-label={`Supprimer ${appName}`}
         >
           <X className="h-3 w-3" />
+        </button>
+      )}
+
+      {type === "edit" && (
+        <button
+          onClick={onClick}
+          className="absolute -top-2 -left-2 bg-blue-500 text-white rounded-full p-0.5 hover:bg-blue-600 transition-colors"
+          aria-label={`Modifier ${appName}`}
+        >
+          <Edit className="h-3 w-3" />
         </button>
       )}
 

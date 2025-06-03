@@ -6,21 +6,21 @@ import { contextBridge, ipcRenderer } from 'electron';
 contextBridge.exposeInMainWorld('electronAPI', {
   openUrl: (url: string) => ipcRenderer.invoke('open-url', url),
   openLocalApp: (appPath: string) => ipcRenderer.invoke('open-local-app', appPath),
-  toggleSpeechRecognition: () => ipcRenderer.invoke('toggle-speech-recognition'),
-  openAddShortcutWindow: () => ipcRenderer.invoke('open-add-shortcut-window'),
+  openAddShortcutWindow: (appData?: any) => ipcRenderer.invoke('open-add-shortcut-window', appData),
   closeAddShortcutWindow: () => ipcRenderer.invoke('close-add-shortcut-window'),
   getApps: () => ipcRenderer.invoke('get-apps'),
-  addApp: (app: any) => ipcRenderer.invoke('add-app', app)
-});
-
-// Listen for speech recognition toggle from main process
-ipcRenderer.on('toggle-speech-recognition', () => {
-  document.dispatchEvent(new CustomEvent('toggle-speech-recognition'));
-  console.log("Speech recognition toggle event received from main process");
+  addApp: (app: any) => ipcRenderer.invoke('add-app', app),
+  updateApp: (app: any) => ipcRenderer.invoke('update-app', app)
 });
 
 // Listen for add app event from add shortcut window
 ipcRenderer.on('add-app', (_event, app) => {
   document.dispatchEvent(new CustomEvent('add-app', { detail: app }));
   console.log("Add app event received from main process", app);
+});
+
+// Listen for update app event from add shortcut window
+ipcRenderer.on('update-app', (_event, app) => {
+  document.dispatchEvent(new CustomEvent('update-app', { detail: app }));
+  console.log("Update app event received from main process", app);
 });

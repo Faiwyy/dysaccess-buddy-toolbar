@@ -64,11 +64,11 @@ function createWindow() {
     process.env.NODE_ENV === 'development' ? '../public/lovable-uploads/63ea3245-8d78-4d36-88ee-8f100c443668.png' : 'build/resources/icon.png'
   );
 
-  // Calculate center position
+  // Calculate center position with adjusted height
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: displayWidth, height: displayHeight } = primaryDisplay.workAreaSize;
   const windowWidth = 1200;
-  const windowHeight = 100;
+  const windowHeight = 120; // Increased from 100 to 120 for better visual framing
 
   const x = Math.round((displayWidth - windowWidth) / 2);
   const y = Math.round((displayHeight - windowHeight) / 2);
@@ -83,8 +83,8 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
-      webSecurity: false, // Permet l'accès aux API web comme Speech Recognition
-      allowRunningInsecureContent: true // Aide avec les API web
+      webSecurity: false,
+      allowRunningInsecureContent: true
     },
     icon: appIconPath,
     transparent: true,
@@ -141,7 +141,7 @@ function createWindow() {
 }
 
 // Function to create add shortcut window
-function createAddShortcutWindow() {
+function createAddShortcutWindow(appData?: any) {
   if (addShortcutWindow) {
     addShortcutWindow.focus();
     return;
@@ -170,15 +170,21 @@ function createAddShortcutWindow() {
     transparent: false,
     resizable: false,
     icon: appIconPath,
-    title: 'Ajouter un raccourci - DysAccess Buddy'
+    title: appData ? 'Modifier le raccourci - DysAccess Buddy' : 'Ajouter un raccourci - DysAccess Buddy'
   });
 
   // Load the add shortcut page
   if (process.env.NODE_ENV === 'development') {
-    addShortcutWindow.loadURL('http://localhost:8080/#/add-shortcut');
+    const url = appData 
+      ? `http://localhost:8080/#/add-shortcut?edit=${encodeURIComponent(JSON.stringify(appData))}`
+      : 'http://localhost:8080/#/add-shortcut';
+    addShortcutWindow.loadURL(url);
   } else {
     const htmlPath = path.join(app.getAppPath(), 'dist', 'index.html');
-    addShortcutWindow.loadFile(htmlPath, { hash: 'add-shortcut' });
+    const hash = appData 
+      ? `add-shortcut?edit=${encodeURIComponent(JSON.stringify(appData))}`
+      : 'add-shortcut';
+    addShortcutWindow.loadFile(htmlPath, { hash });
   }
 
   addShortcutWindow.once('ready-to-show', () => {
@@ -300,17 +306,10 @@ function registerIpcHandlers() {
   ipcMain.handle('open-local-app', async (_event, appPath) => {
     return openLocalApplication(appPath);
   });
-  
-  ipcMain.handle('toggle-speech-recognition', async () => {
-    if (mainWindow) {
-      mainWindow.webContents.send('toggle-speech-recognition');
-    }
-    return true;
-  });
 
   // New handler for opening add shortcut window
-  ipcMain.handle('open-add-shortcut-window', async () => {
-    createAddShortcutWindow();
+  ipcMain.handle('open-add-shortcut-window', async (_event, appData) => {
+    createAddShortcutWindow(appData);
     return true;
   });
 
@@ -334,6 +333,14 @@ function registerIpcHandlers() {
   ipcMain.handle('add-app', async (_event, app) => {
     if (mainWindow) {
       mainWindow.webContents.send('add-app', app);
+    }
+    return true;
+  });
+
+  // Handler for updating app in main window
+  ipcMain.handle('update-app', async (_event, app) => {
+    if (mainWindow) {
+      mainWindow.webContents.send('update-app', app);
     }
     return true;
   });

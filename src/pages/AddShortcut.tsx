@@ -28,9 +28,37 @@ const AddShortcut: React.FC = () => {
   const [appType, setAppType] = useState<"app" | "web">("app");
   const [webUrl, setWebUrl] = useState("");
   const [localPath, setLocalPath] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingApp, setEditingApp] = useState<App | null>(null);
   const { toast } = useToast();
 
-  const addNewApp = async () => {
+  useEffect(() => {
+    // Check if we're editing an existing app
+    const urlParams = new URLSearchParams(window.location.hash.split('?')[1]);
+    const editData = urlParams.get('edit');
+    
+    if (editData) {
+      try {
+        const appData = JSON.parse(decodeURIComponent(editData));
+        setEditingApp(appData);
+        setIsEditing(true);
+        setNewAppName(appData.name);
+        setAppType(appData.type);
+        setSelectedIcon(Object.keys(iconRegistry).find(key => iconRegistry[key] === appData.icon) || "FileText");
+        setSelectedColor(Object.keys(colorRegistry).find(key => colorRegistry[key] === appData.color) || "Bleu");
+        
+        if (appData.type === "web") {
+          setWebUrl(appData.url || "");
+        } else {
+          setLocalPath(appData.localPath || "");
+        }
+      } catch (error) {
+        console.error("Error parsing edit data:", error);
+      }
+    }
+  }, []);
+
+  const saveApp = async () => {
     if (newAppName.trim() === "") {
       toast({
         title: "Erreur",
@@ -58,8 +86,8 @@ const AddShortcut: React.FC = () => {
       return;
     }
 
-    const newApp: App = {
-      id: Date.now().toString(),
+    const appData: App = {
+      id: isEditing ? editingApp!.id : Date.now().toString(),
       name: newAppName,
       icon: iconRegistry[selectedIcon],
       color: colorRegistry[selectedColor],
@@ -67,13 +95,21 @@ const AddShortcut: React.FC = () => {
       ...(appType === "web" ? { url: webUrl } : { localPath: localPath })
     };
 
-    // Send the new app to the main window via IPC
+    // Send the app data to the main window via IPC
     if (window.electronAPI) {
-      await window.electronAPI.addApp(newApp);
-      toast({
-        title: "Application ajoutée",
-        description: `${newAppName} a été ajouté à la barre d'outils.`
-      });
+      if (isEditing) {
+        await window.electronAPI.updateApp(appData);
+        toast({
+          title: "Application modifiée",
+          description: `${newAppName} a été modifié avec succès.`
+        });
+      } else {
+        await window.electronAPI.addApp(appData);
+        toast({
+          title: "Application ajoutée",
+          description: `${newAppName} a été ajouté à la barre d'outils.`
+        });
+      }
       
       // Close this window
       await window.electronAPI.closeAddShortcutWindow();
@@ -92,15 +128,15 @@ const AddShortcut: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl text-center dyslexic-friendly">
-              Ajouter un raccourci
+              {isEditing ? "Modifier le raccourci" : "Ajouter un raccourci"}
             </CardTitle>
             <CardDescription className="text-center dyslexic-friendly">
-              Choisissez entre une application installée ou un site web
+              {isEditing ? "Modifiez les informations de votre raccourci" : "Choisissez entre une application installée ou un site web"}
             </CardDescription>
           </CardHeader>
           
           <CardContent className="space-y-6">
-            <Tabs defaultValue="app" onValueChange={(value) => setAppType(value as "app" | "web")}>
+            <Tabs defaultValue={appType} onValueChange={(value) => setAppType(value as "app" | "web")}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="app" className="dyslexic-friendly">Application</TabsTrigger>
                 <TabsTrigger value="web" className="dyslexic-friendly">Site Web</TabsTrigger>
@@ -166,7 +202,7 @@ const AddShortcut: React.FC = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label className="dyslexic-friendly">Icône</Label>
-                <Select onValueChange={setSelectedIcon} defaultValue={selectedIcon}>
+                <Select onValueChange={setSelectedIcon} value={selectedIcon}>
                   <SelectTrigger>
                     <SelectValue placeholder="Choisir une icône" />
                   </SelectTrigger>
@@ -188,7 +224,7 @@ const AddShortcut: React.FC = () => {
               <div className="space-y-2">
                 <Label className="dyslexic-friendly">Couleur</Label>
                 <RadioGroup 
-                  defaultValue={selectedColor} 
+                  value={selectedColor} 
                   onValueChange={setSelectedColor}
                   className="flex flex-wrap gap-3"
                 >
@@ -222,10 +258,10 @@ const AddShortcut: React.FC = () => {
               </Button>
               <Button 
                 type="button" 
-                onClick={addNewApp}
+                onClick={saveApp}
                 className="flex-1"
               >
-                Ajouter
+                {isEditing ? "Modifier" : "Ajouter"}
               </Button>
             </div>
           </CardContent>
