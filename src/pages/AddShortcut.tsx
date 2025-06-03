@@ -19,6 +19,7 @@ interface App {
   type: "app" | "web";
   url?: string;
   localPath?: string;
+  iconName?: string;
 }
 
 const AddShortcut: React.FC = () => {
@@ -33,16 +34,21 @@ const AddShortcut: React.FC = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log('=== ADD SHORTCUT COMPONENT MOUNTED ===');
+    console.log('Current URL:', window.location.href);
+    console.log('Hash:', window.location.hash);
+    
     // Check if we're editing an existing app
     const urlParams = new URLSearchParams(window.location.hash.split('?')[1]);
     const editData = urlParams.get('edit');
     
-    console.log('URL params:', window.location.hash);
-    console.log('Edit data:', editData);
+    console.log('URL params:', window.location.hash.split('?')[1]);
+    console.log('Edit data string:', editData);
     
     if (editData) {
       try {
         const appData = JSON.parse(decodeURIComponent(editData));
+        console.log('=== EDIT MODE DETECTED ===');
         console.log('Parsed app data for editing:', appData);
         
         setEditingApp(appData);
@@ -50,23 +56,32 @@ const AddShortcut: React.FC = () => {
         setNewAppName(appData.name);
         setAppType(appData.type);
         
-        // Find the icon name from the registry
-        const iconName = Object.keys(iconRegistry).find(key => 
-          iconRegistry[key] === appData.icon
-        ) || "FileText";
+        // Use iconName if available, otherwise try to find it
+        let iconName = appData.iconName || "FileText";
+        if (!appData.iconName) {
+          iconName = Object.keys(iconRegistry).find(key => 
+            iconRegistry[key] === appData.icon
+          ) || "FileText";
+        }
         setSelectedIcon(iconName);
+        console.log('Set icon to:', iconName);
         
         // Find the color name from the registry
         const colorName = Object.keys(colorRegistry).find(key => 
           colorRegistry[key] === appData.color
         ) || "Bleu";
         setSelectedColor(colorName);
+        console.log('Set color to:', colorName);
         
         if (appData.type === "web") {
           setWebUrl(appData.url || "");
+          console.log('Set web URL to:', appData.url);
         } else {
           setLocalPath(appData.localPath || "");
+          console.log('Set local path to:', appData.localPath);
         }
+        
+        console.log('=== FORM INITIALIZED FOR EDITING ===');
       } catch (error) {
         console.error("Error parsing edit data:", error);
         toast({
@@ -75,10 +90,23 @@ const AddShortcut: React.FC = () => {
           variant: "destructive"
         });
       }
+    } else {
+      console.log('=== ADD MODE (no edit data) ===');
     }
   }, [toast]);
 
   const saveApp = async () => {
+    console.log('=== SAVE APP CLICKED ===');
+    console.log('Is editing:', isEditing);
+    console.log('Form data:', {
+      name: newAppName,
+      type: appType,
+      icon: selectedIcon,
+      color: selectedColor,
+      webUrl,
+      localPath
+    });
+
     if (newAppName.trim() === "") {
       toast({
         title: "Erreur",
@@ -115,18 +143,20 @@ const AddShortcut: React.FC = () => {
       ...(appType === "web" ? { url: webUrl } : { localPath: localPath })
     };
 
-    console.log('Saving app:', appData, 'Is editing:', isEditing);
+    console.log('Final app data to save:', appData);
 
     // Send the app data to the main window via IPC
     if (window.electronAPI) {
       try {
         if (isEditing) {
+          console.log('Calling updateApp...');
           await window.electronAPI.updateApp(appData);
           toast({
             title: "Application modifiée",
             description: `${newAppName} a été modifié avec succès.`
           });
         } else {
+          console.log('Calling addApp...');
           await window.electronAPI.addApp(appData);
           toast({
             title: "Application ajoutée",
@@ -135,6 +165,7 @@ const AddShortcut: React.FC = () => {
         }
         
         // Close this window
+        console.log('Closing window...');
         await window.electronAPI.closeAddShortcutWindow();
       } catch (error) {
         console.error('Error saving app:', error);
@@ -152,6 +183,9 @@ const AddShortcut: React.FC = () => {
       await window.electronAPI.closeAddShortcutWindow();
     }
   };
+
+  console.log('Rendering AddShortcut component');
+  console.log('Current state:', { isEditing, newAppName, selectedIcon, selectedColor, appType });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-6 dyslexic-friendly">

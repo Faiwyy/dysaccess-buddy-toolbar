@@ -1,3 +1,4 @@
+
 import { app, BrowserWindow, shell, ipcMain, dialog, Tray, Menu, nativeImage, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
@@ -64,14 +65,16 @@ function createWindow() {
     process.env.NODE_ENV === 'development' ? '../public/lovable-uploads/63ea3245-8d78-4d36-88ee-8f100c443668.png' : 'build/resources/icon.png'
   );
 
-  // Calculate center position with adjusted height
+  // Calculate center position with increased height
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: displayWidth, height: displayHeight } = primaryDisplay.workAreaSize;
   const windowWidth = 1200;
-  const windowHeight = 130; // Increased from 120 to 130 for better visual framing
+  const windowHeight = 150; // Increased from 130 to 150 for better visual framing
 
   const x = Math.round((displayWidth - windowWidth) / 2);
   const y = Math.round((displayHeight - windowHeight) / 2);
+
+  console.log(`Creating main window: ${windowWidth}x${windowHeight} at position ${x},${y}`);
 
   // Create the browser window
   mainWindow = new BrowserWindow({
@@ -142,7 +145,11 @@ function createWindow() {
 
 // Function to create add shortcut window
 function createAddShortcutWindow(appData?: any) {
+  console.log('=== CREATE ADD SHORTCUT WINDOW ===');
+  console.log('Received app data:', appData);
+  
   if (addShortcutWindow) {
+    console.log('Window already exists, focusing...');
     addShortcutWindow.focus();
     return;
   }
@@ -175,23 +182,30 @@ function createAddShortcutWindow(appData?: any) {
 
   // Load the add shortcut page
   if (process.env.NODE_ENV === 'development') {
-    const url = appData 
-      ? `http://localhost:8080/#/add-shortcut?edit=${encodeURIComponent(JSON.stringify(appData))}`
-      : 'http://localhost:8080/#/add-shortcut';
+    let url = 'http://localhost:8080/#/add-shortcut';
+    if (appData) {
+      console.log('Adding edit parameter to URL');
+      url += `?edit=${encodeURIComponent(JSON.stringify(appData))}`;
+    }
+    console.log('Loading URL:', url);
     addShortcutWindow.loadURL(url);
   } else {
     const htmlPath = path.join(app.getAppPath(), 'dist', 'index.html');
-    const hash = appData 
-      ? `add-shortcut?edit=${encodeURIComponent(JSON.stringify(appData))}`
-      : 'add-shortcut';
+    let hash = 'add-shortcut';
+    if (appData) {
+      hash += `?edit=${encodeURIComponent(JSON.stringify(appData))}`;
+    }
+    console.log('Loading file with hash:', hash);
     addShortcutWindow.loadFile(htmlPath, { hash });
   }
 
   addShortcutWindow.once('ready-to-show', () => {
+    console.log('Add shortcut window ready to show');
     addShortcutWindow?.show();
   });
 
   addShortcutWindow.on('closed', () => {
+    console.log('Add shortcut window closed');
     addShortcutWindow = null;
   });
 }
@@ -309,6 +323,8 @@ function registerIpcHandlers() {
 
   // New handler for opening add shortcut window
   ipcMain.handle('open-add-shortcut-window', async (_event, appData) => {
+    console.log('=== IPC HANDLER: open-add-shortcut-window ===');
+    console.log('Received appData:', appData);
     createAddShortcutWindow(appData);
     return true;
   });
@@ -331,6 +347,7 @@ function registerIpcHandlers() {
 
   // Handler for adding app to main window
   ipcMain.handle('add-app', async (_event, app) => {
+    console.log('IPC: Adding app to main window:', app);
     if (mainWindow) {
       mainWindow.webContents.send('add-app', app);
     }
@@ -339,6 +356,7 @@ function registerIpcHandlers() {
 
   // Handler for updating app in main window
   ipcMain.handle('update-app', async (_event, app) => {
+    console.log('IPC: Updating app in main window:', app);
     if (mainWindow) {
       mainWindow.webContents.send('update-app', app);
     }

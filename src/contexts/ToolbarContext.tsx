@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { LucideIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -166,11 +167,35 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Edit an application
   const editApp = (app: AppShortcutData) => {
-    console.log('Editing app:', app);
+    console.log('=== EDIT APP CLICKED ===');
+    console.log('App data to edit:', app);
+    
     if (isElectron() && window.electronAPI) {
-      window.electronAPI.openAddShortcutWindow(app);
+      console.log('Calling electronAPI.openAddShortcutWindow with app data');
+      
+      // Create a serializable version of the app data
+      const editData = {
+        id: app.id,
+        name: app.name,
+        color: app.color,
+        type: app.type,
+        url: app.url,
+        localPath: app.localPath,
+        // Convert icon to string for serialization
+        iconName: Object.keys(iconRegistry).find(key => iconRegistry[key] === app.icon) || "FileText"
+      };
+      
+      console.log('Serialized edit data:', editData);
+      
+      window.electronAPI.openAddShortcutWindow(editData)
+        .then(() => {
+          console.log('Edit window opened successfully');
+        })
+        .catch((error) => {
+          console.error('Error opening edit window:', error);
+        });
     } else {
-      console.log('Edit app:', app);
+      console.log('Edit app (web mode):', app);
       toast({
         title: `Modification de ${app.name}`,
         description: "Cette action ouvrirait l'éditeur d'application en version desktop.",
