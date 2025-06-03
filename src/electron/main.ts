@@ -169,7 +169,7 @@ function createAddShortcutWindow(appData?: any) {
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: true
     },
-    parent: mainWindow,
+    parent: mainWindow || undefined,
     modal: true,
     show: false,
     frame: true,
