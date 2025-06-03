@@ -1,4 +1,3 @@
-
 import { app, BrowserWindow, shell, ipcMain, dialog, Tray, Menu, nativeImage, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
@@ -65,11 +64,11 @@ function createWindow() {
     process.env.NODE_ENV === 'development' ? '../public/lovable-uploads/63ea3245-8d78-4d36-88ee-8f100c443668.png' : 'build/resources/icon.png'
   );
 
-  // Calculate center position with increased height
+  // Calculate center position with increased height for better visual framing
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: displayWidth, height: displayHeight } = primaryDisplay.workAreaSize;
   const windowWidth = 1200;
-  const windowHeight = 150; // Increased from 130 to 150 for better visual framing
+  const windowHeight = 160; // Increased from 150 to 160 for better visual framing and to prevent cropping
 
   const x = Math.round((displayWidth - windowWidth) / 2);
   const y = Math.round((displayHeight - windowHeight) / 2);
