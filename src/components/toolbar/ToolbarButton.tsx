@@ -40,7 +40,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({ type, onClick, appId, app
       {type === "edit" && (
         <button
           onClick={onClick}
-          className="absolute -top-2 -left-8 bg-blue-500 text-white rounded-full p-0.5 hover:bg-blue-600 transition-colors z-10"
+          className="absolute -top-2 -left-6 bg-blue-500 text-white rounded-full p-0.5 hover:bg-blue-600 transition-colors z-10"
           aria-label={`Modifier ${appName}`}
         >
           <Edit className="h-3 w-3" />

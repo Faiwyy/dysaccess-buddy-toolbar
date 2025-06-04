@@ -10,7 +10,7 @@ const AppList: React.FC = () => {
   return (
     <>
       {apps.map((app) => (
-        <div key={app.id} className="relative">
+        <div key={app.id} className="relative mr-4">
           <AppShortcut 
             name={app.name} 
             icon={app.icon} 

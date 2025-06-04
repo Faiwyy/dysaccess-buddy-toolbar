@@ -108,6 +108,7 @@ const AddShortcut: React.FC = () => {
     });
 
     if (newAppName.trim() === "") {
+      console.log('ERROR: Empty app name');
       toast({
         title: "Erreur",
         description: "Le nom de l'application ne peut pas être vide.",
@@ -117,6 +118,7 @@ const AddShortcut: React.FC = () => {
     }
 
     if (appType === "web" && !webUrl.trim()) {
+      console.log('ERROR: Empty web URL');
       toast({
         title: "Erreur",
         description: "L'URL du site web ne peut pas être vide.",
@@ -126,6 +128,7 @@ const AddShortcut: React.FC = () => {
     }
 
     if (appType === "app" && !localPath.trim()) {
+      console.log('ERROR: Empty local path');
       toast({
         title: "Erreur",
         description: "Le chemin d'accès de l'application ne peut pas être vide.",
@@ -140,24 +143,28 @@ const AddShortcut: React.FC = () => {
       icon: iconRegistry[selectedIcon],
       color: colorRegistry[selectedColor],
       type: appType,
+      iconName: selectedIcon,
       ...(appType === "web" ? { url: webUrl } : { localPath: localPath })
     };
 
-    console.log('Final app data to save:', appData);
+    console.log('=== FINAL APP DATA TO SAVE ===');
+    console.log('App data:', JSON.stringify(appData, null, 2));
 
     // Send the app data to the main window via IPC
     if (window.electronAPI) {
       try {
         if (isEditing) {
-          console.log('Calling updateApp...');
-          await window.electronAPI.updateApp(appData);
+          console.log('=== CALLING UPDATE APP ===');
+          const result = await window.electronAPI.updateApp(appData);
+          console.log('Update app result:', result);
           toast({
             title: "Application modifiée",
             description: `${newAppName} a été modifié avec succès.`
           });
         } else {
-          console.log('Calling addApp...');
-          await window.electronAPI.addApp(appData);
+          console.log('=== CALLING ADD APP ===');
+          const result = await window.electronAPI.addApp(appData);
+          console.log('Add app result:', result);
           toast({
             title: "Application ajoutée",
             description: `${newAppName} a été ajouté à la barre d'outils.`
@@ -165,20 +172,29 @@ const AddShortcut: React.FC = () => {
         }
         
         // Close this window
-        console.log('Closing window...');
+        console.log('=== CLOSING WINDOW ===');
         await window.electronAPI.closeAddShortcutWindow();
       } catch (error) {
-        console.error('Error saving app:', error);
+        console.error('=== ERROR SAVING APP ===');
+        console.error('Error details:', error);
         toast({
           title: "Erreur",
           description: "Une erreur s'est produite lors de la sauvegarde.",
           variant: "destructive"
         });
       }
+    } else {
+      console.error('=== ELECTRON API NOT AVAILABLE ===');
+      toast({
+        title: "Erreur",
+        description: "Interface Electron non disponible.",
+        variant: "destructive"
+      });
     }
   };
 
   const handleCancel = async () => {
+    console.log('=== CANCEL CLICKED ===');
     if (window.electronAPI) {
       await window.electronAPI.closeAddShortcutWindow();
     }

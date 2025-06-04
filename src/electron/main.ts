@@ -313,10 +313,12 @@ function openLocalApplication(appPath: string) {
 // Register IPC handlers
 function registerIpcHandlers() {
   ipcMain.handle('open-url', async (_event, url) => {
+    console.log('=== IPC: open-url ===', url);
     return shell.openExternal(url);
   });
 
   ipcMain.handle('open-local-app', async (_event, appPath) => {
+    console.log('=== IPC: open-local-app ===', appPath);
     return openLocalApplication(appPath);
   });
 
@@ -330,6 +332,7 @@ function registerIpcHandlers() {
 
   // Handler for closing add shortcut window
   ipcMain.handle('close-add-shortcut-window', async () => {
+    console.log('=== IPC: close-add-shortcut-window ===');
     if (addShortcutWindow) {
       addShortcutWindow.close();
     }
@@ -338,6 +341,7 @@ function registerIpcHandlers() {
 
   // Handler for getting apps from main window
   ipcMain.handle('get-apps', async () => {
+    console.log('=== IPC: get-apps ===');
     if (mainWindow) {
       return await mainWindow.webContents.executeJavaScript('window.getApps && window.getApps()');
     }
@@ -346,18 +350,28 @@ function registerIpcHandlers() {
 
   // Handler for adding app to main window
   ipcMain.handle('add-app', async (_event, app) => {
-    console.log('IPC: Adding app to main window:', app);
+    console.log('=== IPC: Adding app to main window ===');
+    console.log('App data received:', JSON.stringify(app, null, 2));
     if (mainWindow) {
+      console.log('Sending add-app event to main window');
       mainWindow.webContents.send('add-app', app);
+      console.log('Add-app event sent successfully');
+    } else {
+      console.error('Main window not available');
     }
     return true;
   });
 
   // Handler for updating app in main window
   ipcMain.handle('update-app', async (_event, app) => {
-    console.log('IPC: Updating app in main window:', app);
+    console.log('=== IPC: Updating app in main window ===');
+    console.log('App data received:', JSON.stringify(app, null, 2));
     if (mainWindow) {
+      console.log('Sending update-app event to main window');
       mainWindow.webContents.send('update-app', app);
+      console.log('Update-app event sent successfully');
+    } else {
+      console.error('Main window not available');
     }
     return true;
   });
