@@ -68,7 +68,7 @@ function createWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: displayWidth, height: displayHeight } = primaryDisplay.workAreaSize;
   const windowWidth = 1200;
-  const windowHeight = 160; // Increased from 150 to 160 for better visual framing and to prevent cropping
+  const windowHeight = 180; // Increased from 160 to 180 to prevent cropping
 
   const x = Math.round((displayWidth - windowWidth) / 2);
   const y = Math.round((displayHeight - windowHeight) / 2);
