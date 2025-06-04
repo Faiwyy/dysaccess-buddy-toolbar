@@ -68,7 +68,7 @@ function createWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: displayWidth, height: displayHeight } = primaryDisplay.workAreaSize;
   const windowWidth = 1200;
-  const windowHeight = 180; // Increased from 160 to 180 to prevent cropping
+  const windowHeight = 220; // Increased from 180 to 220 to completely prevent cropping
 
   const x = Math.round((displayWidth - windowWidth) / 2);
   const y = Math.round((displayHeight - windowHeight) / 2);
@@ -326,8 +326,13 @@ function registerIpcHandlers() {
   ipcMain.handle('open-add-shortcut-window', async (_event, appData) => {
     console.log('=== IPC HANDLER: open-add-shortcut-window ===');
     console.log('Received appData:', appData);
-    createAddShortcutWindow(appData);
-    return true;
+    try {
+      createAddShortcutWindow(appData);
+      return true;
+    } catch (error) {
+      console.error('Error creating add shortcut window:', error);
+      return false;
+    }
   });
 
   // Handler for closing add shortcut window

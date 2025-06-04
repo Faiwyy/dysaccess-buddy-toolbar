@@ -16,14 +16,18 @@ const ToolbarManager: React.FC = () => {
         console.log('Calling electronAPI.openAddShortcutWindow...');
         const result = await window.electronAPI.openAddShortcutWindow();
         console.log('Result from openAddShortcutWindow:', result);
+        
+        if (!result) {
+          console.log('Electron window failed to open, using modal fallback');
+          setIsAddDialogOpen(true);
+        }
       } catch (error) {
         console.error('Error opening add shortcut window:', error);
-        // Fallback to modal dialog if Electron API fails
+        console.log('Using modal dialog fallback due to error');
         setIsAddDialogOpen(true);
       }
     } else {
       console.log('ElectronAPI not available - running in web mode, opening modal dialog');
-      // In web mode, open the modal dialog instead
       setIsAddDialogOpen(true);
     }
   };
