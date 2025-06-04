@@ -30,7 +30,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({ type, onClick, appId, app
       {type === "delete" && (
         <button
           onClick={onClick}
-          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600 transition-colors z-10"
+          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors z-20 opacity-0 group-hover:opacity-100"
           aria-label={`Supprimer ${appName}`}
         >
           <X className="h-3 w-3" />
@@ -40,7 +40,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({ type, onClick, appId, app
       {type === "edit" && (
         <button
           onClick={onClick}
-          className="absolute -top-2 -left-6 bg-blue-500 text-white rounded-full p-0.5 hover:bg-blue-600 transition-colors z-10"
+          className="absolute -top-1 -left-1 bg-blue-500 text-white rounded-full p-1 hover:bg-blue-600 transition-colors z-20 opacity-0 group-hover:opacity-100"
           aria-label={`Modifier ${appName}`}
         >
           <Edit className="h-3 w-3" />

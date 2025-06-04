@@ -49,7 +49,7 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ onAddClick }) => {
       {!isCollapsed && (
         <>
           {/* App shortcuts with add button */}
-          <div className="flex space-x-3 items-center">
+          <div className="flex space-x-4 items-center">
             <AppList />
             {isEditing && (
               <ToolbarButton 
@@ -60,7 +60,7 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ onAddClick }) => {
           </div>
           
           {/* Configuration button */}
-          <div className="ml-3 mr-2">
+          <div className="ml-4 mr-2">
             <ToolbarButton
               type="config"
               onClick={toggleEditMode}
