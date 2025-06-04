@@ -15,11 +15,16 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({ type, onClick, appId, app
 
   if ((type === "delete" || type === "edit") && !isEditing) return null;
 
+  const handleClick = () => {
+    console.log(`ToolbarButton clicked: ${type}`);
+    onClick();
+  };
+
   return (
     <>
       {type === "add" && (
         <button
-          onClick={onClick}
+          onClick={handleClick}
           className="w-12 h-12 bg-dysaccess-light-purple rounded-xl flex items-center justify-center hover:bg-dysaccess-purple transition-colors"
           aria-label="Ajouter une application"
         >
@@ -29,7 +34,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({ type, onClick, appId, app
 
       {type === "delete" && (
         <button
-          onClick={onClick}
+          onClick={handleClick}
           className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors z-20 opacity-0 group-hover:opacity-100"
           aria-label={`Supprimer ${appName}`}
         >
@@ -39,7 +44,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({ type, onClick, appId, app
 
       {type === "edit" && (
         <button
-          onClick={onClick}
+          onClick={handleClick}
           className="absolute -top-1 -left-1 bg-blue-500 text-white rounded-full p-1 hover:bg-blue-600 transition-colors z-20 opacity-0 group-hover:opacity-100"
           aria-label={`Modifier ${appName}`}
         >
@@ -49,7 +54,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({ type, onClick, appId, app
 
       {type === "config" && (
         <button
-          onClick={onClick}
+          onClick={handleClick}
           className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
             isEditing ? "bg-green-500 text-white" : "bg-dysaccess-purple bg-opacity-80 text-white hover:bg-opacity-100"
           }`}

@@ -27,6 +27,11 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ onAddClick }) => {
     }
   };
 
+  const handleAddClick = () => {
+    console.log('=== FloatingToolbar: Add button clicked ===');
+    onAddClick();
+  };
+
   return (
     <div 
       className="float-toolbar rounded-2xl p-3 flex items-center transition-all duration-300 toolbar-shadow"
@@ -54,7 +59,7 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ onAddClick }) => {
             {isEditing && (
               <ToolbarButton 
                 type="add" 
-                onClick={onAddClick}
+                onClick={handleAddClick}
               />
             )}
           </div>
