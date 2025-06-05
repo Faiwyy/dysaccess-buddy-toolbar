@@ -64,8 +64,14 @@ try {
     fs.mkdirSync(path.join(__dirname, '../build/resources'), { recursive: true });
   }
   
-  // Copy the new uploaded icon for use as app icon
-  if (fs.existsSync(path.join(__dirname, '../public/lovable-uploads/63ea3245-8d78-4d36-88ee-8f100c443668.png'))) {
+  // Use the new uploaded image as the app icon
+  if (fs.existsSync(path.join(__dirname, '../public/lovable-uploads/ae20d74c-5a52-49a1-9b21-02e6ddac6e5e.png'))) {
+    fs.copyFileSync(
+      path.join(__dirname, '../public/lovable-uploads/ae20d74c-5a52-49a1-9b21-02e6ddac6e5e.png'), 
+      path.join(__dirname, '../build/resources/icon.png')
+    );
+  } else if (fs.existsSync(path.join(__dirname, '../public/lovable-uploads/63ea3245-8d78-4d36-88ee-8f100c443668.png'))) {
+    // Fallback to the previous uploaded icon
     fs.copyFileSync(
       path.join(__dirname, '../public/lovable-uploads/63ea3245-8d78-4d36-88ee-8f100c443668.png'), 
       path.join(__dirname, '../build/resources/icon.png')
