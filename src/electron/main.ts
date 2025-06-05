@@ -355,30 +355,106 @@ function registerIpcHandlers() {
 
   // Handler for adding app to main window
   ipcMain.handle('add-app', async (_event, app) => {
-    console.log('=== IPC: Adding app to main window ===');
-    console.log('App data received:', JSON.stringify(app, null, 2));
-    if (mainWindow) {
-      console.log('Sending add-app event to main window');
-      mainWindow.webContents.send('add-app', app);
-      console.log('Add-app event sent successfully');
-    } else {
-      console.error('Main window not available');
+    console.log('=== IPC HANDLER: add-app START ===');
+    console.log('Received app data:', JSON.stringify(app, null, 2));
+    console.log('App data type:', typeof app);
+    console.log('App data keys:', Object.keys(app || {}));
+    
+    try {
+      if (!app) {
+        console.error('ERROR: No app data provided');
+        return false;
+      }
+      
+      if (!app.id || !app.name) {
+        console.error('ERROR: Missing required app fields (id or name)');
+        console.error('App ID:', app.id);
+        console.error('App name:', app.name);
+        return false;
+      }
+      
+      if (mainWindow) {
+        console.log('=== MAIN WINDOW AVAILABLE ===');
+        console.log('Sending add-app event to main window...');
+        
+        try {
+          mainWindow.webContents.send('add-app', app);
+          console.log('=== ADD-APP EVENT SENT SUCCESSFULLY ===');
+          
+          // Wait a bit to ensure the event was processed
+          await new Promise(resolve => setTimeout(resolve, 100));
+          console.log('Event processing delay completed');
+          
+          return true;
+        } catch (sendError) {
+          console.error('ERROR: Failed to send add-app event');
+          console.error('Send error details:', sendError);
+          return false;
+        }
+      } else {
+        console.error('ERROR: Main window not available');
+        return false;
+      }
+    } catch (error) {
+      console.error('=== CRITICAL ERROR IN ADD-APP HANDLER ===');
+      console.error('Error type:', typeof error);
+      console.error('Error message:', error?.message || 'Unknown error');
+      console.error('Error stack:', error?.stack || 'No stack trace');
+      console.error('Full error object:', error);
+      return false;
     }
-    return true;
   });
 
   // Handler for updating app in main window
   ipcMain.handle('update-app', async (_event, app) => {
-    console.log('=== IPC: Updating app in main window ===');
-    console.log('App data received:', JSON.stringify(app, null, 2));
-    if (mainWindow) {
-      console.log('Sending update-app event to main window');
-      mainWindow.webContents.send('update-app', app);
-      console.log('Update-app event sent successfully');
-    } else {
-      console.error('Main window not available');
+    console.log('=== IPC HANDLER: update-app START ===');
+    console.log('Received app data:', JSON.stringify(app, null, 2));
+    console.log('App data type:', typeof app);
+    console.log('App data keys:', Object.keys(app || {}));
+    
+    try {
+      if (!app) {
+        console.error('ERROR: No app data provided');
+        return false;
+      }
+      
+      if (!app.id || !app.name) {
+        console.error('ERROR: Missing required app fields (id or name)');
+        console.error('App ID:', app.id);
+        console.error('App name:', app.name);
+        return false;
+      }
+      
+      if (mainWindow) {
+        console.log('=== MAIN WINDOW AVAILABLE ===');
+        console.log('Sending update-app event to main window...');
+        
+        try {
+          mainWindow.webContents.send('update-app', app);
+          console.log('=== UPDATE-APP EVENT SENT SUCCESSFULLY ===');
+          
+          // Wait a bit to ensure the event was processed
+          await new Promise(resolve => setTimeout(resolve, 100));
+          console.log('Event processing delay completed');
+          
+          return true;
+        } catch (sendError) {
+          console.error('ERROR: Failed to send update-app event');
+          console.error('Send error details:', sendError);
+          return false;
+        }
+      } else {
+        console.error('ERROR: Main window not available');
+        return false;
+      }
+    } catch (error) {
+      console.error('=== CRITICAL ERROR IN UPDATE-APP HANDLER ===');
+      console.error('Error type:', typeof error);
+      console.error('Error message:', error?.message || 'Unknown error');
+      console.error('Error stack:', error?.stack || 'No stack trace');
+      console.error('Full error object:', error);
+      return false;
     }
-    return true;
   });
 }
 

@@ -153,22 +153,40 @@ const AddShortcut: React.FC = () => {
     // Send the app data to the main window via IPC
     if (window.electronAPI) {
       try {
+        console.log('=== ELECTRON API AVAILABLE ===');
+        
         if (isEditing) {
           console.log('=== CALLING UPDATE APP ===');
+          console.log('About to call updateApp with:', appData);
           const result = await window.electronAPI.updateApp(appData);
-          console.log('Update app result:', result);
-          toast({
-            title: "Application modifiée",
-            description: `${newAppName} a été modifié avec succès.`
-          });
+          console.log('Update app result received:', result);
+          
+          if (result) {
+            console.log('=== UPDATE SUCCESS ===');
+            toast({
+              title: "Application modifiée",
+              description: `${newAppName} a été modifié avec succès.`
+            });
+          } else {
+            console.log('=== UPDATE FAILED ===');
+            throw new Error('Update app returned false');
+          }
         } else {
           console.log('=== CALLING ADD APP ===');
+          console.log('About to call addApp with:', appData);
           const result = await window.electronAPI.addApp(appData);
-          console.log('Add app result:', result);
-          toast({
-            title: "Application ajoutée",
-            description: `${newAppName} a été ajouté à la barre d'outils.`
-          });
+          console.log('Add app result received:', result);
+          
+          if (result) {
+            console.log('=== ADD SUCCESS ===');
+            toast({
+              title: "Application ajoutée",
+              description: `${newAppName} a été ajouté à la barre d'outils.`
+            });
+          } else {
+            console.log('=== ADD FAILED ===');
+            throw new Error('Add app returned false');
+          }
         }
         
         // Close this window
@@ -176,15 +194,20 @@ const AddShortcut: React.FC = () => {
         await window.electronAPI.closeAddShortcutWindow();
       } catch (error) {
         console.error('=== ERROR SAVING APP ===');
+        console.error('Error type:', typeof error);
+        console.error('Error message:', error?.message || 'Unknown error');
         console.error('Error details:', error);
+        console.error('Stack trace:', error?.stack || 'No stack trace available');
+        
         toast({
           title: "Erreur",
-          description: "Une erreur s'est produite lors de la sauvegarde.",
+          description: `Une erreur s'est produite lors de la sauvegarde: ${error?.message || 'Erreur inconnue'}`,
           variant: "destructive"
         });
       }
     } else {
       console.error('=== ELECTRON API NOT AVAILABLE ===');
+      console.error('Running in web mode - this should not happen for adding apps');
       toast({
         title: "Erreur",
         description: "Interface Electron non disponible.",
