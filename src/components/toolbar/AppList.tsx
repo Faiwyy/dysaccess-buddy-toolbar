@@ -12,8 +12,8 @@ const AppList: React.FC = () => {
   return (
     <>
       {apps.map((app) => {
-        // Ensure we have the correct icon and color
-        const iconName = typeof app.icon === 'string' ? app.icon : app.iconName || 'FileText';
+        // Find the icon name by matching the icon component with the registry
+        const iconName = Object.keys(iconRegistry).find(key => iconRegistry[key] === app.icon) || 'FileText';
         const colorName = typeof app.color === 'string' ? app.color : 'Bleu';
         
         return (
