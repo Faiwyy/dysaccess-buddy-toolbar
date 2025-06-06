@@ -15,6 +15,8 @@ const AppShortcut: React.FC<AppShortcutProps> = ({
   onClick, 
   bgColor = "bg-dysaccess-blue"
 }) => {
+  console.log('AppShortcut render:', { name, Icon: Icon?.name, bgColor });
+  
   return (
     <button
       onClick={onClick}
@@ -22,7 +24,7 @@ const AppShortcut: React.FC<AppShortcutProps> = ({
       aria-label={`Ouvrir ${name}`}
     >
       <div className={`w-12 h-12 ${bgColor} rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
-        <Icon className="h-6 w-6 text-white" />
+        {Icon && <Icon className="h-6 w-6 text-white" />}
       </div>
       <span className="mt-1 text-xs font-medium text-dysaccess-text dyslexic-friendly">
         {name}

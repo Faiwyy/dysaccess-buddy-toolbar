@@ -68,8 +68,24 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Add event listeners for IPC communication
   useEffect(() => {
     const handleAddApp = (event: CustomEvent) => {
-      const newApp = event.detail;
-      console.log('Adding new app:', newApp);
+      const appData = event.detail;
+      console.log('Adding new app from IPC:', appData);
+      
+      // Convert icon string back to LucideIcon if needed
+      let iconComponent = iconRegistry.FileText; // default fallback
+      if (appData.iconName && iconRegistry[appData.iconName]) {
+        iconComponent = iconRegistry[appData.iconName];
+      } else if (typeof appData.icon === 'string' && iconRegistry[appData.icon]) {
+        iconComponent = iconRegistry[appData.icon];
+      }
+      
+      const newApp: AppShortcutData = {
+        ...appData,
+        icon: iconComponent,
+        id: appData.id || Date.now().toString()
+      };
+      
+      console.log('Processed app data:', newApp);
       setApps(prevApps => [...prevApps, newApp]);
       toast({
         title: `${newApp.name} ajouté`,
@@ -78,8 +94,23 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     const handleUpdateApp = (event: CustomEvent) => {
-      const updatedApp = event.detail;
-      console.log('Updating app:', updatedApp);
+      const appData = event.detail;
+      console.log('Updating app from IPC:', appData);
+      
+      // Convert icon string back to LucideIcon if needed
+      let iconComponent = iconRegistry.FileText; // default fallback
+      if (appData.iconName && iconRegistry[appData.iconName]) {
+        iconComponent = iconRegistry[appData.iconName];
+      } else if (typeof appData.icon === 'string' && iconRegistry[appData.icon]) {
+        iconComponent = iconRegistry[appData.icon];
+      }
+      
+      const updatedApp: AppShortcutData = {
+        ...appData,
+        icon: iconComponent
+      };
+      
+      console.log('Processed updated app data:', updatedApp);
       setApps(prevApps => 
         prevApps.map(app => 
           app.id === updatedApp.id ? updatedApp : app

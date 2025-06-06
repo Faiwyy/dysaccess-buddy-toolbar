@@ -5,7 +5,9 @@ import AppShortcut from "../AppShortcut";
 import ToolbarButton from "./ToolbarButton";
 
 const AppList: React.FC = () => {
-  const { apps, openApp, removeApp, editApp } = useToolbar();
+  const { apps, openApp, removeApp, editApp, isEditing } = useToolbar();
+
+  console.log('AppList render:', { appsCount: apps.length, isEditing, apps });
 
   return (
     <>
@@ -18,19 +20,23 @@ const AppList: React.FC = () => {
             onClick={() => openApp(app)}
           />
           
-          <ToolbarButton 
-            type="delete" 
-            onClick={() => removeApp(app.id)} 
-            appId={app.id}
-            appName={app.name}
-          />
+          {isEditing && (
+            <>
+              <ToolbarButton 
+                type="delete" 
+                onClick={() => removeApp(app.id)} 
+                appId={app.id}
+                appName={app.name}
+              />
 
-          <ToolbarButton 
-            type="edit" 
-            onClick={() => editApp(app)} 
-            appId={app.id}
-            appName={app.name}
-          />
+              <ToolbarButton 
+                type="edit" 
+                onClick={() => editApp(app)} 
+                appId={app.id}
+                appName={app.name}
+              />
+            </>
+          )}
         </div>
       ))}
     </>
