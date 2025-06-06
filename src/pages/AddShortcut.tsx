@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { iconRegistry } from "@/lib/iconRegistry";
 import { colorRegistry } from "@/lib/colorRegistry";
@@ -136,18 +137,18 @@ const AddShortcut: React.FC = () => {
       return;
     }
 
-    // MODIFICATION CLÉ: Simplifier l'objet appData pour éviter l'erreur de clonage
+    // CORRECTION: Envoyer l'icône comme nom de string, pas comme composant React
     const appData: App = {
       id: isEditing ? editingApp!.id : Date.now().toString(),
       name: newAppName,
-      icon: selectedIcon, // Envoyer directement le nom de l'icône (string)
-      color: selectedColor, // Envoyer directement le nom de la couleur (string)
+      icon: selectedIcon, // Envoyer le nom de l'icône directement
+      color: selectedColor, // Envoyer le nom de la couleur directement
       type: appType,
       iconName: selectedIcon, // Conserver pour compatibilité
       ...(appType === "web" ? { url: webUrl } : { localPath: localPath })
     };
 
-    console.log('=== FINAL APP DATA TO SAVE (SIMPLIFIED) ===');
+    console.log('=== FINAL APP DATA TO SAVE ===');
     console.log('App data:', JSON.stringify(appData, null, 2));
 
     // Send the app data to the main window via IPC
