@@ -6,7 +6,7 @@ const BuddyMascot: React.FC = () => {
     <div className="buddy-mascot relative">
       <div className="w-10 h-10 rounded-full overflow-hidden buddy-bounce">
         <img 
-          src="/lovable-uploads/63ea3245-8d78-4d36-88ee-8f100c443668.png" 
+          src="/lovable-uploads/7469bd03-2ae7-481a-93fa-b9c1d5ef3ed7.png" 
           alt="Buddy - Assistant DysAccess" 
           className="w-full h-full object-cover"
         />
