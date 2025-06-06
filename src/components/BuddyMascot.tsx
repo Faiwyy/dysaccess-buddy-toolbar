@@ -1,19 +1,32 @@
 
 import React from "react";
+import { Smile, GripHorizontal } from "lucide-react";
 
-const BuddyMascot: React.FC = () => {
+interface BuddyMascotProps {
+  showTip?: boolean;
+  tipText?: string;
+}
+
+const BuddyMascot: React.FC<BuddyMascotProps> = () => {
   return (
-    <div className="buddy-mascot relative">
-      <div className="w-10 h-10 rounded-full overflow-hidden buddy-bounce">
-        <div className="w-full h-full bg-gradient-to-br from-purple-400 to-purple-500 flex items-center justify-center relative">
-          {/* Eyes - simple dots */}
-          <div className="absolute top-3 left-3 w-1 h-1 bg-white rounded-full"></div>
-          <div className="absolute top-3 right-3 w-1 h-1 bg-white rounded-full"></div>
-          
-          {/* Smile - simple curved line */}
-          <div className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2">
-            <div className="w-3 h-1.5 border-b border-white rounded-full"></div>
+    <div className="relative flex items-center">
+      {/* Icône de déplacement */}
+      <div className="absolute -left-1 -top-4">
+        <GripHorizontal className="h-4 w-4 text-dysaccess-text opacity-50" />
+      </div>
+      
+      {/* Mascotte Buddy */}
+      <div className="relative buddy-bounce">
+        <div className="w-14 h-14 rounded-full bg-dysaccess-purple flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
+            <Smile className="h-8 w-8 text-dysaccess-purple" />
           </div>
+        </div>
+        
+        {/* Antennes */}
+        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
+          <div className="w-1 h-5 bg-dysaccess-purple rounded-full -ml-3"></div>
+          <div className="w-1 h-5 bg-dysaccess-purple rounded-full"></div>
         </div>
       </div>
     </div>
