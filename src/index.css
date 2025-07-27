@@ -52,6 +52,22 @@
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Dysaccess colors */
+    --dysaccess-blue: 204 61% 80%;
+    --dysaccess-purple: 300 24% 83%;
+    --dysaccess-background: 0 0% 99%;
+    --dysaccess-text: 0 0% 20%;
+    --dysaccess-light-blue: 204 55% 88%;
+    --dysaccess-light-purple: 300 20% 90%;
+    --dysaccess-soft-green: 82 59% 94%;
+    --dysaccess-soft-yellow: 52 89% 92%;
+    --dysaccess-soft-orange: 25 84% 83%;
+    --dysaccess-soft-purple: 251 100% 93%;
+    --dysaccess-soft-pink: 348 100% 93%;
+    --dysaccess-soft-peach: 21 89% 90%;
+    --dysaccess-soft-blue: 218 100% 91%;
+    --dysaccess-soft-gray: 252 41% 96%;
   }
 
   .dark {
@@ -90,6 +106,22 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Dysaccess colors for dark mode */
+    --dysaccess-blue: 204 61% 70%;
+    --dysaccess-purple: 300 24% 73%;
+    --dysaccess-background: 0 0% 10%;
+    --dysaccess-text: 0 0% 90%;
+    --dysaccess-light-blue: 204 55% 78%;
+    --dysaccess-light-purple: 300 20% 80%;
+    --dysaccess-soft-green: 82 59% 84%;
+    --dysaccess-soft-yellow: 52 89% 82%;
+    --dysaccess-soft-orange: 25 84% 73%;
+    --dysaccess-soft-purple: 251 100% 83%;
+    --dysaccess-soft-pink: 348 100% 83%;
+    --dysaccess-soft-peach: 21 89% 80%;
+    --dysaccess-soft-blue: 218 100% 81%;
+    --dysaccess-soft-gray: 252 41% 86%;
   }
 }
 

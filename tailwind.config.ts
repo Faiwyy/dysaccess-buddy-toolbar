@@ -63,20 +63,20 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
                 'dysaccess': {
-                    'blue': '#A6D1E6',
-                    'purple': '#D8BFD8',
-                    'background': '#FEFEFE',
-                    'text': '#333333',
-                    'light-blue': '#C7E2F0',
-                    'light-purple': '#E7D9E7',
-                    'soft-green': '#F2FCE2',
-                    'soft-yellow': '#FEF7CD',
-                    'soft-orange': '#FEC6A1',
-                    'soft-purple': '#E5DEFF',
-                    'soft-pink': '#FFDEE2',
-                    'soft-peach': '#FDE1D3',
-                    'soft-blue': '#D3E4FD',
-                    'soft-gray': '#F1F0FB'
+                    'blue': 'hsl(var(--dysaccess-blue))',
+                    'purple': 'hsl(var(--dysaccess-purple))',
+                    'background': 'hsl(var(--dysaccess-background))',
+                    'text': 'hsl(var(--dysaccess-text))',
+                    'light-blue': 'hsl(var(--dysaccess-light-blue))',
+                    'light-purple': 'hsl(var(--dysaccess-light-purple))',
+                    'soft-green': 'hsl(var(--dysaccess-soft-green))',
+                    'soft-yellow': 'hsl(var(--dysaccess-soft-yellow))',
+                    'soft-orange': 'hsl(var(--dysaccess-soft-orange))',
+                    'soft-purple': 'hsl(var(--dysaccess-soft-purple))',
+                    'soft-pink': 'hsl(var(--dysaccess-soft-pink))',
+                    'soft-peach': 'hsl(var(--dysaccess-soft-peach))',
+                    'soft-blue': 'hsl(var(--dysaccess-soft-blue))',
+                    'soft-gray': 'hsl(var(--dysaccess-soft-gray))'
                 }
 			},
 			borderRadius: {
