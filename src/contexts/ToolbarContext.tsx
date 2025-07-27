@@ -18,10 +18,10 @@ export interface AppShortcutData {
 
 // Default applications
 export const defaultApps: AppShortcutData[] = [
-  { id: "1", name: "LibreOffice", icon: iconRegistry.FileText, color: "bg-[hsl(201_74%_78%)]", type: "app", localPath: "/Applications/LibreOffice.app" },
+  { id: "1", name: "LibreOffice", icon: iconRegistry.FileText, color: "bg-dysaccess-blue", type: "app", localPath: "/Applications/LibreOffice.app" },
   { id: "2", name: "Navigateur", icon: iconRegistry.Globe, color: "bg-orange-400", type: "web", url: "https://www.google.fr" },
-  { id: "3", name: "Lexibar", icon: iconRegistry.Keyboard, color: "bg-[hsl(300_24%_85%)]", type: "app", localPath: "/Applications/Lexibar.app" },
-  { id: "4", name: "AsTeRICS", icon: iconRegistry.Grid, color: "bg-[hsl(202_58%_85%)]", type: "web", url: "https://grid.asterics.eu" }
+  { id: "3", name: "Lexibar", icon: iconRegistry.Keyboard, color: "bg-dysaccess-purple", type: "app", localPath: "/Applications/Lexibar.app" },
+  { id: "4", name: "AsTeRICS", icon: iconRegistry.Grid, color: "bg-dysaccess-light-blue", type: "web", url: "https://grid.asterics.eu" }
 ];
 
 interface ToolbarContextType {
