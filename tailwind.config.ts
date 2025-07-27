@@ -63,20 +63,20 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
                 'dysaccess': {
-                    'blue': '#A6D1E6',
-                    'purple': '#D8BFD8',
-                    'background': '#FEFEFE',
-                    'text': '#333333',
-                    'light-blue': '#C7E2F0',
-                    'light-purple': '#E7D9E7',
-                    'soft-green': '#F2FCE2',
-                    'soft-yellow': '#FEF7CD',
-                    'soft-orange': '#FEC6A1',
-                    'soft-purple': '#E5DEFF',
-                    'soft-pink': '#FFDEE2',
-                    'soft-peach': '#FDE1D3',
-                    'soft-blue': '#D3E4FD',
-                    'soft-gray': '#F1F0FB'
+                    'blue': '201 74% 78%',
+                    'purple': '300 24% 85%', 
+                    'background': '0 0% 99%',
+                    'text': '0 0% 20%',
+                    'light-blue': '202 58% 85%',
+                    'light-purple': '300 24% 89%',
+                    'soft-green': '88 73% 94%',
+                    'soft-yellow': '50 86% 91%',
+                    'soft-orange': '28 96% 82%',
+                    'soft-purple': '248 100% 94%',
+                    'soft-pink': '346 100% 93%',
+                    'soft-peach': '25 85% 91%',
+                    'soft-blue': '218 100% 91%',
+                    'soft-gray': '248 67% 96%'
                 }
 			},
 			borderRadius: {
