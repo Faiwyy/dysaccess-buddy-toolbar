@@ -53,8 +53,8 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ onAddClick }) => {
       {/* Collapsible content */}
       {!isCollapsed && (
         <>
-          {/* App shortcuts with add button */}
-          <div className="flex space-x-4 items-center">
+          {/* App shortcuts with add button - CORRECTION: Ajouter défilement horizontal */}
+          <div className="flex space-x-4 items-center max-w-[800px] overflow-x-auto scrollbar-hide">
             <AppList />
             {isEditing && (
               <ToolbarButton 

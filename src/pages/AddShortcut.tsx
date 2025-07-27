@@ -141,7 +141,7 @@ const AddShortcut: React.FC = () => {
       id: isEditing ? editingApp!.id : Date.now().toString(),
       name: newAppName,
       icon: selectedIcon, // Envoyer directement le nom de l'icône (string)
-      color: selectedColor, // Envoyer directement le nom de la couleur (string)
+      color: colorRegistry[selectedColor], // CORRECTION: Mapper le nom à la classe CSS
       type: appType,
       iconName: selectedIcon, // Conserver pour compatibilité
       ...(appType === "web" ? { url: webUrl } : { localPath: localPath })
