@@ -199,11 +199,11 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const appData = event.detail;
       console.log('Adding new app from IPC:', appData);
       
-      // Check if maximum number of apps reached
+      // Check if maximum number of apps reached (including default apps)
       if (apps.length >= MAX_APPS) {
         toast({
           title: "Limite atteinte",
-          description: `Vous ne pouvez avoir que ${MAX_APPS} applications maximum dans la barre d'outils.`,
+          description: `Vous ne pouvez avoir que ${MAX_APPS} applications maximum dans la barre d'outils (${defaultApps.length} par défaut + ${MAX_APPS - defaultApps.length} personnalisées).`,
           variant: "destructive"
         });
         return;
