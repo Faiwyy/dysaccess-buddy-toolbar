@@ -4,6 +4,7 @@ import { LucideIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { iconRegistry } from "@/lib/iconRegistry";
 import { colorRegistry } from "@/lib/colorRegistry";
+import { supabase } from "@/integrations/supabase/client";
 
 // Types for the app shortcuts
 export interface AppShortcutData {
@@ -47,7 +48,7 @@ interface ToolbarContextType {
 export const ToolbarContext = createContext<ToolbarContextType | undefined>(undefined);
 
 export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [apps, setApps] = useState<AppShortcutData[]>(defaultApps);
+  const [apps, setApps] = useState<AppShortcutData[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [showTip, setShowTip] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -64,6 +65,130 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const isElectron = () => {
     return window.navigator.userAgent.indexOf('Electron') !== -1;
   };
+
+  // Load apps from Supabase
+  const loadApps = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('apps')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('Error loading apps:', error);
+        // Use default apps if loading fails
+        setApps(defaultApps);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const loadedApps = data.map(app => ({
+          id: app.id,
+          name: app.name,
+          icon: iconRegistry[app.icon] || iconRegistry.FileText,
+          color: app.color,
+          type: app.type as "app" | "web",
+          url: app.url || undefined,
+          localPath: app.local_path || undefined
+        }));
+        setApps(loadedApps);
+      } else {
+        // No apps in database, use defaults and save them
+        setApps(defaultApps);
+        await saveDefaultApps();
+      }
+    } catch (error) {
+      console.error('Error loading apps:', error);
+      setApps(defaultApps);
+    }
+  };
+
+  // Save default apps to Supabase
+  const saveDefaultApps = async () => {
+    try {
+      for (const app of defaultApps) {
+        const iconName = Object.keys(iconRegistry).find(key => iconRegistry[key] === app.icon) || "FileText";
+        await supabase.from('apps').insert({
+          id: app.id,
+          name: app.name,
+          icon: iconName,
+          color: app.color,
+          type: app.type,
+          url: app.url,
+          local_path: app.localPath
+        });
+      }
+    } catch (error) {
+      console.error('Error saving default apps:', error);
+    }
+  };
+
+  // Save app to Supabase
+  const saveAppToSupabase = async (app: AppShortcutData) => {
+    try {
+      const iconName = Object.keys(iconRegistry).find(key => iconRegistry[key] === app.icon) || "FileText";
+      const { error } = await supabase.from('apps').insert({
+        id: app.id,
+        name: app.name,
+        icon: iconName,
+        color: app.color,
+        type: app.type,
+        url: app.url,
+        local_path: app.localPath
+      });
+      
+      if (error) {
+        console.error('Error saving app to Supabase:', error);
+      }
+    } catch (error) {
+      console.error('Error saving app to Supabase:', error);
+    }
+  };
+
+  // Update app in Supabase
+  const updateAppInSupabase = async (app: AppShortcutData) => {
+    try {
+      const iconName = Object.keys(iconRegistry).find(key => iconRegistry[key] === app.icon) || "FileText";
+      const { error } = await supabase
+        .from('apps')
+        .update({
+          name: app.name,
+          icon: iconName,
+          color: app.color,
+          type: app.type,
+          url: app.url,
+          local_path: app.localPath
+        })
+        .eq('id', app.id);
+      
+      if (error) {
+        console.error('Error updating app in Supabase:', error);
+      }
+    } catch (error) {
+      console.error('Error updating app in Supabase:', error);
+    }
+  };
+
+  // Delete app from Supabase
+  const deleteAppFromSupabase = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('apps')
+        .delete()
+        .eq('id', id);
+      
+      if (error) {
+        console.error('Error deleting app from Supabase:', error);
+      }
+    } catch (error) {
+      console.error('Error deleting app from Supabase:', error);
+    }
+  };
+
+  // Load apps on component mount
+  useEffect(() => {
+    loadApps();
+  }, []);
 
   // Add event listeners for IPC communication
   useEffect(() => {
@@ -87,6 +212,7 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
       
       console.log('Processed app data:', newApp);
       setApps(prevApps => [...prevApps, newApp]);
+      saveAppToSupabase(newApp);
       toast({
         title: `${newApp.name} ajouté`,
         description: "L'application a été ajoutée à la barre d'outils.",
@@ -116,6 +242,7 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
           app.id === updatedApp.id ? updatedApp : app
         )
       );
+      updateAppInSupabase(updatedApp);
       toast({
         title: `${updatedApp.name} modifié`,
         description: "L'application a été mise à jour.",
@@ -190,6 +317,7 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Remove an application
   const removeApp = (id: string) => {
     setApps(apps.filter(app => app.id !== id));
+    deleteAppFromSupabase(id);
     toast({
       title: "Application supprimée",
       description: "L'application a été retirée de la barre d'outils.",
