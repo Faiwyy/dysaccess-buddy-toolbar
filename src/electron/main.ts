@@ -64,11 +64,18 @@ function createWindow() {
     process.env.NODE_ENV === 'development' ? '../public/lovable-uploads/63ea3245-8d78-4d36-88ee-8f100c443668.png' : 'build/resources/icon.png'
   );
 
-  // Calculate center position with increased height for better visual framing
+  // Calculate center position with optimized size for 6 apps maximum
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: displayWidth, height: displayHeight } = primaryDisplay.workAreaSize;
-  const windowWidth = 1200;
-  const windowHeight = 220; // Increased from 180 to 220 to completely prevent cropping
+  
+  // Optimized width for exactly 6 applications + buttons:
+  // - 6 apps × 60px = 360px
+  // - + button: 60px  
+  // - collapse button: 60px
+  // - padding and margins: ~120px
+  // Total: ~600px
+  const windowWidth = 600;
+  const windowHeight = 120; // Reduced height for a more compact toolbar
 
   const x = Math.round((displayWidth - windowWidth) / 2);
   const y = Math.round((displayHeight - windowHeight) / 2);

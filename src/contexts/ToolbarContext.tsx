@@ -190,11 +190,24 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
     loadApps();
   }, []);
 
+  // Maximum number of apps allowed
+  const MAX_APPS = 6;
+
   // Add event listeners for IPC communication
   useEffect(() => {
     const handleAddApp = (event: CustomEvent) => {
       const appData = event.detail;
       console.log('Adding new app from IPC:', appData);
+      
+      // Check if maximum number of apps reached
+      if (apps.length >= MAX_APPS) {
+        toast({
+          title: "Limite atteinte",
+          description: `Vous ne pouvez avoir que ${MAX_APPS} applications maximum dans la barre d'outils.`,
+          variant: "destructive"
+        });
+        return;
+      }
       
       // Convert icon string back to LucideIcon if needed
       let iconComponent = iconRegistry.FileText; // default fallback
@@ -256,7 +269,7 @@ export const ToolbarProvider: React.FC<{ children: React.ReactNode }> = ({ child
       document.removeEventListener('add-app', handleAddApp as EventListener);
       document.removeEventListener('update-app', handleUpdateApp as EventListener);
     };
-  }, [toast]);
+  }, [toast, apps, MAX_APPS]);
 
   // Handle mouse movement for dragging
   useEffect(() => {
