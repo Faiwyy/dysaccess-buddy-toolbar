@@ -40,7 +40,9 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ onAddClick }) => {
         left: `${dragPosition.x}px`, 
         top: `${dragPosition.y}px`,
         transition: isDragging ? 'none' : 'all 0.2s ease',
-        width: isCollapsed ? 'auto' : 'auto',
+        width: 'fit-content',
+        minWidth: isCollapsed ? '80px' : '320px',
+        maxWidth: isCollapsed ? '80px' : '800px',
         background: 'rgba(255, 255, 255, 0.95)',
         backdropFilter: 'blur(10px)'
       }}
@@ -53,8 +55,8 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ onAddClick }) => {
       {/* Collapsible content */}
       {!isCollapsed && (
         <>
-          {/* App shortcuts with add button - CORRECTION: Ajouter défilement horizontal */}
-          <div className="flex space-x-4 items-center max-w-[800px] overflow-x-auto scrollbar-hide">
+          {/* App shortcuts with add button */}
+          <div className="flex items-center gap-3 mr-3">
             <AppList />
             {isEditing && (
               <ToolbarButton 
@@ -65,7 +67,7 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ onAddClick }) => {
           </div>
           
           {/* Configuration button */}
-          <div className="ml-4 mr-2">
+          <div className="mr-2">
             <ToolbarButton
               type="config"
               onClick={toggleEditMode}

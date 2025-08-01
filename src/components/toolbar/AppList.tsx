@@ -10,9 +10,9 @@ const AppList: React.FC = () => {
   console.log('AppList render:', { appsCount: apps.length, isEditing, apps });
 
   return (
-    <>
+    <div className="flex items-center gap-3">
       {apps.map((app) => (
-        <div key={app.id} className="relative group">
+        <div key={app.id} className="relative group flex-shrink-0">
           <AppShortcut 
             name={app.name} 
             icon={app.icon} 
@@ -39,7 +39,7 @@ const AppList: React.FC = () => {
           )}
         </div>
       ))}
-    </>
+    </div>
   );
 };
 
