@@ -19,10 +19,10 @@ export interface AppShortcutData {
 
 // Default applications
 export const defaultApps: AppShortcutData[] = [
-  { id: "1", name: "LibreOffice", icon: iconRegistry.FileText, color: "bg-dysaccess-blue", type: "app", localPath: "/Applications/LibreOffice.app" },
+  { id: "1", name: "Microsoft Word", icon: iconRegistry.FileText, color: "bg-blue-600", type: "app", localPath: "/Applications/Microsoft Word.app" },
   { id: "2", name: "Navigateur", icon: iconRegistry.Globe, color: "bg-orange-400", type: "web", url: "https://www.google.fr" },
   { id: "3", name: "Lexibar", icon: iconRegistry.Keyboard, color: "bg-dysaccess-purple", type: "app", localPath: "/Applications/Lexibar.app" },
-  { id: "4", name: "AsTeRICS", icon: iconRegistry.Grid, color: "bg-dysaccess-light-blue", type: "web", url: "https://grid.asterics.eu" }
+  { id: "4", name: "Google Docs", icon: iconRegistry.FileText, color: "bg-blue-500", type: "web", url: "https://docs.google.com" }
 ];
 
 interface ToolbarContextType {
